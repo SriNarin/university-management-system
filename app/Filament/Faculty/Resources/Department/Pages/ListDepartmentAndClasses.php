@@ -1,0 +1,6 @@
+<?php
+namespace App\Filament\Faculty\Resources\DepartmentResource\Pages;
+use App\Filament\Faculty\Resources\DepartmentResource;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
+class ListDepartments extends ListRecords { protected static string $resource = DepartmentResource::class; protected function getHeaderActions(): array { return [CreateAction::make()]; } }
