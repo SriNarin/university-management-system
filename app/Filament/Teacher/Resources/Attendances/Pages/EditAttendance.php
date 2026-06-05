@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Teacher\Resources\Attendances\Pages;
+namespace App\Filament\Teacher\Resources\Attendances;
 
 use App\Filament\Teacher\Resources\Attendances\AttendanceResource;
 use Filament\Actions;

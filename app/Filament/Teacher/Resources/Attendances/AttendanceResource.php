@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Filament\Teacher\Resources\Attendances;
-
+use App\Filament\Teacher\Resources\Attendances;
 use App\Filament\Teacher\Resources\Attendances\Pages\CreateAttendance;
-use App\Filament\Teacher\Resources\Attendances\Pages\EditAttendance;
+use App\Filament\Teacher\Resources\Attendances\Pages;
 use App\Filament\Teacher\Resources\Attendances\Pages\ListAttendances;
 use App\Filament\Teacher\Resources\Attendances\Pages\TakeAttendanceSheet;
 use App\Filament\Teacher\Resources\Attendances\Pages\ViewAttendance;

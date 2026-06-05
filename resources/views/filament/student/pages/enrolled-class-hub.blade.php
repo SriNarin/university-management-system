@@ -126,7 +126,7 @@
                                                 if ($status === 'present') { $bg = '#ecfdf5'; $color = '#065f46'; }
                                                 elseif (in_array($status, ['permission', 'excused'])) { $bg = '#fffbeb'; $color = '#92400e'; }
                                             @endphp
-                                            <span style="display: inline-block; background-color: {{ $bg }}; color: {{ $color }}; padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+                                            <span style="display: inline-block; background-color: #374151 ; color: #4b5563 ; padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
                                                 {{ $log->status ?? 'ABSENT' }}
                                             </span>
                                         </td>
