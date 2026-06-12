@@ -1,19 +1,13 @@
-FROM richarvey/nginx-php-fpm:latest
-
-# 1. Force the container to use PHP 8.4
-ENV PHP_VERSION=8.4
-ENV DOCUMENT_ROOT=/var/www/html/public
-
-# 2. Add PHP 8.4 paths directly to the system environment execution loop
-ENV PATH="/usr/bin/php8.4:/usr/sbin/php8.4:$PATH"
-ENV APP_ENV=production
+FROM richarvey/nginx-php-fpm:3.1.6
 
 COPY . /var/www/html
 
-# 3. CRITICAL FIX: Tell composer to ignore local platform restrictions during build
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV WEBROOT=/var/www/html/public
+ENV PHP_ERRORS=1
 
-# 4. Compile frontend asset matrices
-RUN npm install && npm run build
+RUN composer install --no-dev
+
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
