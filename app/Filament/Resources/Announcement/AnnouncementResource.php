@@ -99,9 +99,9 @@ class AnnouncementResource extends Resource
             });
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Section::make('University Broadcast Notice Information')
                 ->schema([
                     TextInput::make('title')
