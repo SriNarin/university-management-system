@@ -134,7 +134,12 @@ abstract class AbstractClassScheduleResource extends Resource
             ->columns([
                 TextColumn::make('id')->label('Ref ID')->sortable(),
 
-                // Displays the exact targeted single class code badge (e.g., M1, M2)
+                TextColumn::make('schoolclass.academicStructure.department.faculty.name_en')
+                    ->label('Faculty')
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold')
+                    ->color('info'),
                 
                 TextColumn::make('schoolclass.academicStructure.department.name_en')
                     ->label('Department')
@@ -142,6 +147,7 @@ abstract class AbstractClassScheduleResource extends Resource
                         "{$record->schoolClass?->academicStructure?->department?->name_en} " 
                     )
                     ->searchable()
+                    ->weight('bold')
                     ->color('warning')
                     ->sortable(),
 
@@ -154,13 +160,15 @@ abstract class AbstractClassScheduleResource extends Resource
                         ucfirst($record->schoolClass?->academicStructure?->year_progress ?? '')
                     )
                     ->searchable()
+                    ->weight('bold')
                     ->color('info')
                     ->sortable(),  
 
                 TextColumn::make('schoolClass.class_code')
                     ->label('Class Code')
                     ->badge()
-                    ->color('success')
+                    ->weight('bold')
+                    ->color('warning')
                     ->searchable()
                     ->sortable(),
 
@@ -168,23 +176,29 @@ abstract class AbstractClassScheduleResource extends Resource
                     ->label('Subject Code')
                     ->searchable()
                     ->badge()
-                    ->color('gray')
+                    ->weight('bold')
+                    ->color('danger')
                     ->sortable(),
 
                 TextColumn::make('subject_name_en')
                     ->label('Subject Title')
                     ->searchable()
                     ->sortable()
+                    ->weight('bold')
                     ->color('success'),
 
                 TextColumn::make('teacher.name')
                     ->label('Teacher')
                     ->searchable()
                     ->color('info')
+                    ->weight('bold')
                     ->sortable(),
 
                 TextColumn::make('schoolClass.room_number')
                     ->label('Room / Shift')
+                    ->searchable()
+                    ->color('info')
+                    ->weight('bold')
                     ->getStateUsing(fn ($record) => 
                         "Room: " . ($record->schoolClass?->room_number ?? 'Online') . 
                         " (" . strtoupper($record->schoolClass?->shift ?? 'N/A') . ")"
@@ -195,7 +209,9 @@ abstract class AbstractClassScheduleResource extends Resource
                     ->label('Day Slot')
                     ->badge()
                     ->color('success')
-                    ->sortable(),
+                    ->weight('bold')
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('start_time')
                     ->label('Time Slot')
@@ -203,12 +219,16 @@ abstract class AbstractClassScheduleResource extends Resource
                         date('h:i A', strtotime($record->start_time)) . ' - ' . date('h:i A', strtotime($record->end_time))
                     )
                     ->sortable()
-                    ->color('primary'),
+                    ->weight('bold')
+                    ->color('info'),
+
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->timezone('Asia/Phnom_Penh')
                     ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->weight('bold')
+                    ->color('danger')
                     ->toggleable(isToggledHiddenByDefault: false),
               
             ])

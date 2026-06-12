@@ -165,6 +165,7 @@ class AnnouncementResource extends Resource
                 TextColumn::make('title')
                     ->label('Notice Title Heading')
                     ->searchable()
+                    ->weight('bold')
                     ->wrap()
                     ->sortable(),
 
@@ -172,6 +173,7 @@ class AnnouncementResource extends Resource
                 TextColumn::make('target_roles')
                     ->label('Audience')
                     ->badge()
+                    ->weight('bold')
                     ->color('info')
                     ->separator(',')
                     ->default('📢 Public Notice')
@@ -197,6 +199,8 @@ class AnnouncementResource extends Resource
                     ->timezone('Asia/Phnom_Penh')
                     ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->weight('bold')
+                    ->color('danger ')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->defaultSort('is_pinned_to_top', 'desc')

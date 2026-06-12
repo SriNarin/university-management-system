@@ -16,11 +16,9 @@
                     <h4 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">{{ $material->lecture_title_topic }}</h4>
                     <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Published: {{ $material->created_at->timezone('Asia/Phnom_Penh')->format('M d, Y h:i A') }}</p>
                 </div>
-                <a href="{{ asset('storage/' . $material->resource_attachment_path) }}" 
-                   download
-                   target="_blank"
-                   class="inline-flex items-center justify-center gap-2 w-full px-3 py-2 text-xs font-semibold text-white bg-info-600 hover:bg-info-500 rounded-lg shadow transition-colors">
-                    📥 Download Document Asset
+                <a href="{{ route('materials.stream-download', ['id' => $material->id]) }}" 
+                    class="inline-flex items-center justify-center gap-2 w-full px-3 py-2 text-xs font-semibold text-white bg-info-600 hover:bg-info-500 rounded-lg shadow transition-colors">
+                        📥 Download Document Asset
                 </a>
             </div>
         @empty

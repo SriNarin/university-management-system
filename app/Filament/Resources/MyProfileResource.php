@@ -23,6 +23,8 @@ use BackedEnum;
 use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\schema;
 use Filament\Actions\{EditAction, DeleteAction};
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\ImageColumn;
 
 
 class MyProfileResource extends Resource
@@ -33,9 +35,9 @@ class MyProfileResource extends Resource
 
     protected static \UnitEnum|string|null $navigationGroup =  'Admin Profile Management';
 
-    protected static ?string $pluralModelLabel = 'Admin Profile Management';
+    protected static ?string $pluralModelLabel = 'My Profile Management';
 
-    protected static ?string $modelLabel = 'Admin Profile Settings';
+    protected static ?string $modelLabel = 'My Profile';
 
     protected static ?string $slug = 'my-profile';
 
@@ -60,6 +62,14 @@ class MyProfileResource extends Resource
                     ->description('View your account role classification and update your core identity details.')
                     ->schema([
                         Grid::make(3)->schema([
+                            FileUpload::make('avatar_url') 
+                                ->label('Profile Avatar Picture')
+                                ->image()
+                                ->avatar() // Makes the upload circle-shaped preview
+                                ->directory('profile-photos')
+                                ->maxSize(2048) // Limit to 2MB Max
+                                ->columnSpanFull(),
+
                             TextInput::make('name')
                                 ->label('Full Name')
                                 ->required()
@@ -118,23 +128,41 @@ class MyProfileResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('avatar_url')
+                ->label('Photo')
+                ->circular()
+                ->colors(['primary' => 'admin', 'warning' => 'faculty_manager', 'secondary' => 'study_office', 'success' => 'teacher', 'info' => 'student'])
+                ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=' . urlencode($record->name))
+                ->extraImgAttributes(['alt' => 'Profile Picture']),
+
                 TextColumn::make('name')
                     ->label('Profile Name')
                     ->fontFamily('sans')
+                    ->color('success')
+                    ->searchable()
+                    ->sortable()
                     ->weight('bold'),
 
                 TextColumn::make('email')
                     ->label('Email Identity')
+                    ->color('info')
+                    ->weight('bold')
+                    ->sortable()
+                    ->searchable()
                     ->copyable(),
 
                 TextColumn::make('role')
                     ->label('Role Group')
                     ->badge()
                     ->color('danger')
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold')
                     ->formatStateUsing(fn ($state) => str_replace('_', ' ', strtoupper($state))),
 
                 IconColumn::make('is_active')
                     ->label('Account Status')
+                    ->color('success')
                     ->boolean(),
             ])
             ->actions([

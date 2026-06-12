@@ -12,6 +12,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use BackedEnum;
 use Filament\Support\Icons\Heroicon;
+use Filament\Actions\Action;
 
 // 🌟 FIX 1: Explicitly import your actual List page namespace so Filament knows where to look!
 use App\Filament\Office\Resources\SubjectFinalGrades\Pages\ListSubjectFinalGrades;
@@ -37,14 +38,15 @@ class SubjectFinalGradeResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('student.name')->label('Student Name')->searchable(), 
-                TextColumn::make('classSchedule.schoolClass.class_code')->label('Class Enrolled')->badge(),
-                TextColumn::make('classSchedule.subject_name_en')->label('Subject Module'),
-                TextColumn::make('total_accumulated_score')->label('Subject Total Score')->weight('bold'),
-                TextColumn::make('final_grade_letter')->label('Grade')->badge()->color('info'),
+                TextColumn::make('student.name')->label('Student Name')->searchable()->sortable()->weight('bold'), 
+                TextColumn::make('classSchedule.schoolClass.class_code')->label('Class Enrolled')->badge()->color('warning')->sortable()->searchable(),
+                TextColumn::make('classSchedule.subject_name_en')->label('Subject Module')->color('info')->weight('bold')->sortable()->searchable(),
+                TextColumn::make('total_accumulated_score')->label('Subject Total Score')->weight('bold')->color('danger')->sortable()->searchable(),
+                TextColumn::make('final_grade_letter')->label('Grade')->badge()->sortable()->searchable()->weight('bold')->color('success'),
 
                 ToggleColumn::make('is_approved_by_manager')
                     ->label('Forward to Manager Review')
+                    
                     ->beforeStateUpdated(function ($record, $state) {
                         if ($state) {
                             $record->approved_by_manager_at = now();
@@ -52,12 +54,15 @@ class SubjectFinalGradeResource extends Resource
                     }),
                 
                 // 🌟 Custom ViewColumn calling your custom blade icon file
-                ViewColumn::make('print_transcript_link')
-                    ->label('Print Transcript')
+                ViewColumn::make('id')
+                    ->label('Print Student Official Transcript')
                     ->view('filament.tables.columns.transcript-download-action')
                     ->alignCenter(),
             ])
-            ->actions([])
+            ->actions([
+            
+                
+            ])
             ->bulkActions([]);
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Providers\Filament;
-
+use App\Models\User;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,6 +18,8 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\CustomEditProfile; 
+use Filament\Support\Facades\FilamentView; 
+use Illuminate\Support\Facades\Blade;
 
 
 class AdminPanelProvider extends PanelProvider
@@ -28,9 +30,19 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+           ->renderHook(
+                'panels::styles.after',
+                fn (): string => Blade::render('<link rel="stylesheet" href="{{ asset(\'css/filament-custom.css\') }}?v=' . time() . '">'),
+            )
             ->login()
             ->colors([
                 'primary' => Color::Red,
+
+                'danger' => Color::Red,
+                'gray' => Color::Zinc,
+                'info' => Color::Blue,
+                'success' => '#66f674', // Your custom green hover color
+                'warning' => Color::Amber,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->resources([
@@ -51,7 +63,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\FilamentInfoWidget::class,
                 \App\Filament\Widgets\AdminDataOverview::class,
                 \App\Filament\Widgets\AdminBarChart::class,  // 🌟 Native Bar Chart Added
                 \App\Filament\Widgets\AdminPieChart::class,  // 🌟 Native Pie Chart Added

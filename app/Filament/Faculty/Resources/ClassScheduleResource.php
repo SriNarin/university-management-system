@@ -17,7 +17,7 @@ class ClassScheduleResource extends AbstractClassScheduleResource
     // Updated directly to use your custom project architecture properties
     protected static string|BackedEnum|null $navigationIcon = Heroicon::AcademicCap;
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Academic Classes Management';
+    protected static \UnitEnum|string|null $navigationGroup = 'Manage Department & Class';
     
     protected static ?string $pluralModelLabel = 'Classes Lists';
 

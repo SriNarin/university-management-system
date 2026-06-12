@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Providers\Filament;
-
+use App\Models\User;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,7 +18,8 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\Auth\CustomEditProfile;
-
+use Filament\Support\Facades\FilamentView; 
+use Illuminate\Support\Facades\Blade;
 class OfficePanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -26,6 +27,10 @@ class OfficePanelProvider extends PanelProvider
         return $panel
             ->id('office')
             ->path('office')
+           ->renderHook(
+                'panels::styles.after',
+                fn (): string => Blade::render('<link rel="stylesheet" href="{{ asset(\'css/filament-custom.css\') }}?v=' . time() . '">'),
+            )
             ->login()
             ->colors([
                 'primary' => Color::Blue,
@@ -54,6 +59,8 @@ class OfficePanelProvider extends PanelProvider
 
                 // \App\Filament\Widgets\UserProfileOverview::class,
                 \App\Filament\Widgets\OfficeStatsOverview::class,
+                \App\Filament\Widgets\OfficeClassesPerDepartmentBarChart::class,
+                \App\Filament\Widgets\OfficeStudentDistributionPieChart::class,
 
                 
             ])

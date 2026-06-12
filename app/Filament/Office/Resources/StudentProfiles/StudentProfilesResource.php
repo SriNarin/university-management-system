@@ -87,23 +87,37 @@ class StudentProfilesResource extends Resource
                 TextColumn::make('student_id_card')
                     ->label('Student ID Card')
                     ->sortable()
+                    ->weight('bold')
                     ->searchable(),
                 TextColumn::make('user.name')
                     ->label('Student Name')
                     ->sortable()
+                    ->weight('bold')
+                    ->color('danger')
                     ->searchable(),
                 TextColumn::make('date_of_birth')
                     ->label('Date of Birth')
+                    ->weight('bold')
+                    ->color('info')
                     ->date(),
                 TextColumn::make('age')
+                    ->weight('bold')                 
                     ->label('Age'),
                 TextColumn::make('gender')
                     ->label('Gender')
+                    ->weight('bold')
+                    ->color('warning')
                     ->badge(),
                 TextColumn::make('phone_number')
-                    ->label('Phone Number'),
+                    ->label('Phone Number')
+                    ->weight('bold')
+                    ->color('info')
+                    ->searchable(),
                 TextColumn::make('current_address')
                     ->label('Current Address')
+                    ->searchable()
+                    ->weight('bold')
+                    ->color('success')
                     ->limit(50)
                     ->wrap(),
                 TextColumn::make('created_at')
@@ -111,6 +125,8 @@ class StudentProfilesResource extends Resource
                     ->timezone('Asia/Phnom_Penh')
                     ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->weight('bold')
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
         ])
          

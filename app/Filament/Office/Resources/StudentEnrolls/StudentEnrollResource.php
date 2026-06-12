@@ -100,38 +100,61 @@ class StudentEnrollResource extends Resource
                 TextColumn::make('student.name')
                     ->label('Student Name')
                     ->sortable()
+                    ->color('danger')
+                    ->weight('bold')
+                    ->searchable(),
+                TextColumn::make('schoolClass.academicStructure.department.faculty.name_en')
+                    ->label('Faculty')
+                    ->sortable()
+                    ->color('warning')
+                    ->weight('bold')
                     ->searchable(),
                 TextColumn::make('schoolClass.academicStructure.department.name_en')
                     ->label('Department')
                     ->sortable()
+                    ->color('info')
+                    ->weight('bold')
                     ->searchable(),
                 TextColumn::make('schoolClass.academicStructure.academic_level')
                     ->label('Academic Level')
                     ->formatStateUsing(fn (string $state): string => ucfirst($state))
                     ->sortable()
+                    ->color('danger')
+                    ->weight('bold')
                     ->searchable(),
                 TextColumn::make('schoolClass.academicStructure.generation')
                     ->label('Generation')
                     ->formatStateUsing(fn (string $state): string => ucfirst($state))
                     ->sortable()
+                    ->color('success')
+                    ->weight('bold')
                     ->searchable(),
                 TextColumn::make('schoolClass.academicStructure.year_progress')
                     ->label('Year Progress')
                     ->formatStateUsing(fn (string $state): string => str_replace('_', ' ', ucfirst($state)))
                     ->badge()
+                    ->color('warning')
+                    ->weight('bold')
                     ->sortable()
                     ->searchable(), 
                 TextColumn::make('schoolClass.class_code')
                     ->label('Assigned Class Code')
                     ->badge()
-                    ->color('gray'),
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold')
+                    ->color('info'),
                 TextColumn::make('schoolClass.shift')
                     ->label('Shift')
                     ->sortable()
+                    ->weight('bold')
+                    ->color('success')
                     ->searchable(),
                 TextColumn::make('schoolClass.room_number')
                     ->label('Room Number')
                     ->sortable()
+                    ->weight('bold')
+                    ->color('info')
                     ->searchable(),
 
                 
@@ -139,14 +162,19 @@ class StudentEnrollResource extends Resource
                 TextColumn::make('enrollment_type')
                     ->label('Enrollment Type')
                     ->badge()
-                    ->color(fn ($state) => $state === 'paid' ? 'success' : 'warning'),
+                    ->color(fn ($state) => $state === 'paid' ? 'success' : 'warning')
+                    ->weight('bold'),
 
                 TextColumn::make('Student Tuition Details')
+                    ->label('Student Tuition Details')
+                    ->color('danger')
+                    ->weight('bold')
                     ->getStateUsing(fn ($record) => $record->enrollment_type === 'paid' ? '$' . number_format($record->amount_paid, 2) : $record->scholarship_type),
 
                 TextColumn::make('approval_status')
                     ->label('Manager Approval Status')
                     ->badge()
+                    ->weight('bold')
                     ->color(fn (string $state): string => match ($state) {
                         'approved' => 'success',
                         'rejected' => 'danger',
@@ -155,12 +183,16 @@ class StudentEnrollResource extends Resource
 
                 TextColumn::make('managerApprover.name')
                     ->label('Approved By Manager')
+                    ->weight('bold')
+                    ->color('info')
                     ->placeholder('Pending Authorization Review...'),
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->timezone('Asia/Phnom_Penh')
                     ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->searchable()
+                    ->weight('bold')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([

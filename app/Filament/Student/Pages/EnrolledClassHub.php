@@ -7,6 +7,7 @@ use App\Models\SchoolClass;
 use App\Models\LessonMaterial;
 use App\Models\Attendance;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Filament\Support\Icons\Heroicon;
 use BackedEnum;
 
@@ -28,6 +29,41 @@ class EnrolledClassHub extends Page
         if ($firstClass) {
             $this->selectedClassId = $firstClass->id;
         }
+    }
+
+    /**
+     * ✅ NEW METHOD: Securely stream the file download straight to the user
+     */
+    public function downloadMaterial($materialId)
+    {
+        $material = LessonMaterial::find($materialId);
+
+        if (!$material || empty($material->resource_attachment_path)) {
+            $this->dispatch('notify', [
+                'status' => 'danger',
+                'message' => 'Material record or file assignment not found.'
+            ]);
+            return;
+        }
+
+        $path = $material->resource_attachment_path;
+
+        // Check if the file exists in the public disk setup
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->Storage::download($path);
+        }
+
+        // Fallback fallback check for the root default disk app setup
+        if (Storage::exists($path)) {
+            return Storage::download($path);
+        }
+
+        // Throw a user-friendly filament alert notice if it completely fails
+        \Filament\Notifications\Notification::make()
+            ->title('File Missing')
+            ->body('The actual file can no longer be found on the server storage disk paths.')
+            ->danger()
+            ->send();
     }
 
     /**

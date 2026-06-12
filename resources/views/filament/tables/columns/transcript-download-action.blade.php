@@ -1,38 +1,41 @@
-<div class="flex items-center justify-center gap-3 px-2 py-1">
-    
-    <form action="{{ route('timetable.toggle-status', $getRecord()->id) }}" 
-          method="POST" 
-          class="inline-flex items-center"
-          onclick="event.stopPropagation();">
-        @csrf
-        
-        @if($getRecord()->is_timetable_published)
-            <button type="submit" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition shadow-sm">
-                <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
-                🖨️Click to Print and Download Timetables
-            </button>
-        @else
-            <button type="submit" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-gray-100 text-gray-700 border border-gray-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition shadow-sm">
-                ⚙️ Generate Timetable
-            </button>
-        @endif
-    </form>
-
-    @if($getRecord()->is_timetable_published)
-        <a href="{{ route('timetable.print', $getRecord()->id) }}" 
-           target="_blank" 
-           onclick="event.stopPropagation();"
-           title="Download Academic Timetable"
-           style="display: inline-flex !important; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background-color: #ecfdf5; color: #059669; transition: all 0.2s;"
-           onmouseover="this.style.backgroundColor='#d1fae5'"
-           onmouseout="this.style.backgroundColor='#ecfdf5'"
+<div class="w-full flex items-center justify-center" style="display: flex !important; justify-content: center !important; align-items: center !important;">
+    @if($getRecord() && $getRecord()->classSchedule)
+        <a 
+            href="{{ route('office.transcript.print', [
+                'student' => $getRecord()->student_id,
+                'class' => $getRecord()->classSchedule->school_class_id
+            ]) }}" 
+            target="_blank"
+            title="View & Print Official Academic Transcript"
+            class="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-bold tracking-wide border transition-all duration-200 shadow-sm"
+            style="
+                display: inline-flex !important; 
+                align-items: center !important; 
+                justify-content: center !important; 
+                gap: 8px !important; 
+                padding: 6px 14px !important; 
+                border-radius: 6px !important; 
+                background-color: #4f46e5; 
+                color: #ffffff; 
+                border: 1px solid #4338ca; 
+                text-decoration: none !important; 
+                font-size: 12px !important; 
+                font-weight: 700 !important; 
+                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+                transition: all 0.2s ease-in-out;
+            "
+            onmouseover="this.style.backgroundColor='#4338ca'; this.style.borderColor='#3730a3';"
+            onmouseout="this.style.backgroundColor='#4f46e5'; this.style.borderColor='#4338ca';"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 20px; height: 20px; display: block;">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.3" stroke="currentColor" style="width: 15px; height: 15px; display: inline-block;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
             </svg>
+            
+            <span>Generate Transcript</span>
         </a>
     @else
-        <span class="text-[11px] text-gray-400 font-mono tracking-wider select-none bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200/50">Unpublished</span>
+        <span class="text-xs text-gray-400 select-none bg-gray-50 px-2 py-1 rounded border border-gray-200/60 font-mono" style="color: #9ca3af; font-size: 11px; font-family: monospace;">
+            Empty Record
+        </span>
     @endif
-
 </div>

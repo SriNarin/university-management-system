@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Models\User;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,6 +19,8 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\Auth\CustomEditProfile;
+use Filament\Support\Facades\FilamentView; 
+use Illuminate\Support\Facades\Blade;
 
 class TeacherPanelProvider extends PanelProvider
 {
@@ -26,6 +29,10 @@ class TeacherPanelProvider extends PanelProvider
         return $panel
             ->id('teacher')
             ->path('teacher')
+            ->renderHook(
+                'panels::styles.after',
+                fn (): string => Blade::render('<link rel="stylesheet" href="{{ asset(\'css/filament-custom.css\') }}?v=' . time() . '">'),
+            )
             ->login()
             ->colors([
                 'primary' => Color::Green,
@@ -44,19 +51,23 @@ class TeacherPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Teacher/Pages'), for: 'App\\Filament\\Teacher\\Pages')
              ->pages([
                 Pages\Dashboard::class,
-               
             ])
             
+            // 🛠️ Clear out automatically discovered base widgets to avoid rendering overlaps
             ->discoverWidgets(in: app_path('Filament/Teacher/Widgets'), for: 'App\\Filament\\Teacher\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                // \App\Filament\Widgets\UserProfileOverview::class,
+                // 1. Overview Summary Cards at the top row
                 \App\Filament\Widgets\TeacherStatsOverview::class,
-                \App\Filament\Widgets\TeacherTimetableMatrix::class,
+                
+                // 2. Graphical data charts down below
+                \App\Filament\Widgets\TeacherAttendanceBarChart::class,
+                \App\Filament\Widgets\TeacherAttendancePieChart::class,
+                
+                // 3. User account metadata widget banner at the bottom or corner
+                Widgets\AccountWidget::class,
             ])
-
             
-            ->databaseNotifications() // 🌟 Enable this line in EVERY provider file!
+            ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->middleware([
                 EncryptCookies::class,
@@ -67,8 +78,7 @@ class TeacherPanelProvider extends PanelProvider
                 VerifyCsrfToken::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-            ])
+                ])
             ->authMiddleware([
                 Authenticate::class,
             ]);

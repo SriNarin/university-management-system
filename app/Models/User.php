@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\HasAvatar;
+use Illuminate\Support\Facades\Storage;
+
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +14,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 
-class User extends Authenticatable implements FilamentUser
+
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     use HasFactory, Notifiable;
 
@@ -27,6 +31,7 @@ class User extends Authenticatable implements FilamentUser
         'role', 
         'is_active', 
         'lang_preference', 
+        'avatar_url',
         'permissions_matrix'
     ];
 
@@ -148,4 +153,17 @@ class User extends Authenticatable implements FilamentUser
                 ->withPivot(['enrollment_type', 'scholarship_type', 'amount_paid', 'approval_status'])
                 ->withTimestamps();
 }
+
+      public function getFilamentAvatarUrl(): ?string
+        {
+           
+            // 1. Check if the user has an avatar path stored and if the file actually exists on the public disk
+            if ($this->avatar_url && Storage::disk('public')->exists($this->avatar_url)) {
+                return Storage::disk('public')->Storage::url($this->avatar_url);
+            }
+
+
+            // 2. Strong Fallback: If no file exists or it's missing, use the working UI-Avatars API link
+            return 'https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=' . urlencode($this->name);
+        }
 }

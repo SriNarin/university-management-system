@@ -2,6 +2,7 @@
 
 namespace App\Filament\Teacher\Resources;
 
+use App\Models\ClassSchedule;
 use App\Models\SchoolClass;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -13,7 +14,7 @@ use BackedEnum;
 
 class MyTeachingScheduleResource extends Resource
 {
-    protected static ?string $model = SchoolClass::class;
+    protected static ?string $model = ClassSchedule::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
 
@@ -26,41 +27,66 @@ class MyTeachingScheduleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            // 🔒 SCOPE: Ensure precise data type parsing for the logged-in Teacher accounts
             ->modifyQueryUsing(function (Builder $query) {
-                // Check if there is an authenticated user session present
                 if (Auth::check()) {
                     $currentTeacherId = (int) Auth::user()->id;
 
+                    // Query schedule rows matching this teacher where parent class timetable is published
                     $query->where('teacher_id', $currentTeacherId)
-                          ->where('is_teacher_timetable_published', true);
+                          ->whereHas('schoolClass', function (Builder $subQuery) {
+                              $subQuery->where('is_timetable_published', true);
+                          });
                 } else {
-                    // Fallback protection if session fails to load
                     $query->whereRaw('1 = 0');
                 }
             })
             ->columns([
-                TextColumn::make('academicStructure.department.faculty.name_en')
+                 TextColumn::make('schoolClass.academicStructure.department.faculty.name_en')
                     ->label('Faculty')
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold')
                     ->color('danger'),
                 
-                TextColumn::make('academicStructure.department.name_en')
+                TextColumn::make('schoolClass.academicStructure.department.name_en')
                     ->label('Department')
-                    ->color('secondary'),
-                
-                TextColumn::make('academicStructure.academic_level')
-                    ->label('Academic Level')
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold')
                     ->color('info'),
 
-                TextColumn::make('class_code')
-                    ->label('Class Code')
+                TextColumn::make('schoolClass.class_code')
+                    ->label('Class')
                     ->badge()
+                    ->weight('bold')
                     ->color('success'),
+
+                // 📚 SUBJECT DETAILS
+                TextColumn::make('subject_name_en')
+                    ->label('Subject')
+                    ->weight('bold')
+                    ->description(fn (ClassSchedule $record): string => "Code: {$record->subject_code}"),
+
+                // 📅 DAY OF WEEK
+                TextColumn::make('day_of_week')
+                    ->label('Day')
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                    ->color('danger')
+                    ->weight('bold'),
+
+                // ⏰ TIME SLOT DURATION
+                TextColumn::make('start_time')
+                    ->label('Teaching Time')
+                    ->formatStateUsing(fn ($record): string => 
+                        date('h:i A', strtotime($record->start_time)) . ' - ' . date('h:i A', strtotime($record->end_time))
+                    )
+                    ->color('info')
+                    ->weight('bold'),
                 
-                TextColumn::make('shift')
+                TextColumn::make('schoolClass.shift')
                     ->label('Shift')
                     ->badge()
+                    ->weight('bold')
                     ->color(fn (string $state): string => match ($state) {
                         'morning' => 'warning',
                         'afternoon' => 'info',
@@ -68,14 +94,16 @@ class MyTeachingScheduleResource extends Resource
                         default => 'gray',
                     }),
 
-                TextColumn::make('room_number')
-                    ->label('Room Number'),
+                TextColumn::make('schoolClass.room_number')
+                    ->label('Room')
+                    ->badge()
+                    ->weight('bold')
+                    ->color('info'),
 
-                // Optional print button column layout container reference mapping
-                Tables\Columns\ViewColumn::make('id')
-                    ->label('Print Session Sheet')
-                    ->view('filament.tables.columns.teacher-schedule-print-action')
-                    ->alignCenter(),
+                // Tables\Columns\ViewColumn::make('id')
+                //     ->label('Print Sheet')
+                //     ->view('filament.tables.columns.teacher-schedule-print-action')
+                //     ->alignCenter(),
             ])
             ->actions([])
             ->bulkActions([])
@@ -86,7 +114,6 @@ class MyTeachingScheduleResource extends Resource
     {
         return [
             'index' => \App\Filament\Teacher\Resources\MyTeachingScheduleResource\Pages\ListMyTeachingSchedules::route('/'),
-
         ];
     }
 }

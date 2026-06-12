@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\SchoolClass;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 
 Route::get('/', function () {
     return view('public-home');
@@ -51,3 +52,15 @@ Route::post('/faculty/timetable/toggle/{id}', [TimetablePrintController::class, 
 Route::get('/student/timetable/print/{classId}', [TimetablePrintController::class, 'printStudentTimetable'])
     ->name('student.timetable.print')
     ->middleware(['auth']);
+
+Route::get('/download-material/{id}', function ($id){
+    $material = \App\Models\LessonMaterial::findOrFail($id);
+    $filePath = $material->resource_attachment_path;
+
+    if (!$filePath || !Storage::disk('public')->exists($filePath)){
+        abort(404, 'The requested lesson file does not exist on this server.');
+    }
+
+    $fullPath = Storage::disk('public')->path($filePath);
+    return Response::download($fullPath, basename($fullPath));
+})->middleware(['auth'])->name('materials.stream-download');

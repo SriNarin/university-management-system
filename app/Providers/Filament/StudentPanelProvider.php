@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Providers\Filament;
-
+use App\Models\User;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,6 +18,8 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\Auth\CustomEditProfile;
+use Filament\Support\Facades\FilamentView; 
+use Illuminate\Support\Facades\Blade;
 
 class StudentPanelProvider extends PanelProvider
 {
@@ -26,6 +28,10 @@ class StudentPanelProvider extends PanelProvider
         return $panel
             ->id('student')
             ->path('student')
+            ->renderHook(
+                'panels::styles.after',
+                fn (): string => Blade::render('<link rel="stylesheet" href="{{ asset(\'css/filament-custom.css\') }}?v=' . time() . '">'),
+            )
             ->login()
             ->colors([
                 'primary' => Color::Indigo,
@@ -49,13 +55,11 @@ class StudentPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
             //    \App\Filament\Widgets\UserProfileOverview::class,
-               \App\Filament\Widgets\StudentAcademicProfile::class,   // 🌟 Added structural info & schedules matrix
+            //    \App\Filament\Widgets\StudentAcademicProfile::class,   // 🌟 Added structural info & schedules matrix
                 \App\Filament\Widgets\StudentPieChart::class,          // 🌟 Added Pie chart tracking
                 \App\Filament\Widgets\StudentBarChart::class,
                  \App\Filament\Widgets\StudentStatsOverview::class,     // Metric calculation blocks
                  
-               
-
             ])
             
            

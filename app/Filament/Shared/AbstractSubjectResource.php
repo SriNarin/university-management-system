@@ -5,6 +5,7 @@ namespace App\Filament\Shared;
 
 use App\Models\Subject;
 use App\Models\Department;
+
 use Filament\Resources\Resource;
 use Filament\Forms\Form;
 use Filament\Schemas\Schema;
@@ -81,37 +82,47 @@ abstract class AbstractSubjectResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->label('Ref ID')->sortable(),
-                
+
                 TextColumn::make('subject_code')
                     ->label('Subject Code')
                     ->searchable()
                     ->badge()
-                    ->color('gray'),
+                    ->sortable()
+                    ->weight('bold')
+                    ->color('warning'),
 
                 TextColumn::make('title_en')
                     ->label('Subject Title (EN)')
                     ->searchable()
+                    ->weight('bold')
+                    ->color('success')
                     ->sortable(),
 
                 TextColumn::make('title_kh')
                     ->label('Subject Title (KH)')
+                    ->sortable()
+                    ->weight('bold')
                     ->searchable(),
 
                 TextColumn::make('department.name_en')
                     ->label('Department')
                     ->searchable()
+                    ->color('info')
+                    ->weight('bold')
                     ->sortable(),
 
                 TextColumn::make('credits')
                     ->label('Subject Credits ')
                     ->badge()
-                    ->color('info')
+                    ->color('danger')
+                    ->weight('bold')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->timezone('Asia/Phnom_Penh')
                     ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->weight('bold')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([

@@ -44,7 +44,29 @@ class OfficeStatsOverview extends BaseWidget
             ->distinct('user_id')
             ->count('user_id');
 
+        // 7. Total quantity of faculties (Table 2)
+        $facultiesCount = DB::table('faculties')->count();
+
+        // 8. Total users registered with the 'faculty_manager' role (Table 1)
+        $facultyManagersCount = DB::table('users')
+            ->where('role', 'faculty_manager')
+            ->count();
+
+        // 🌟 9. New Element: Total live, visible institutional announcements (Table 15)
+        $announcementsCount = DB::table('announcements')
+            ->where('is_visible', true)
+            ->count();
+
         return [
+            
+            Stat::make('🏛️ Total Faculties', $facultiesCount)
+                ->description('High-level institutional faculties')
+                ->color('primary'),
+
+            Stat::make('👩‍💼 Faculty Manager Roles', $facultyManagersCount)
+                ->description('Total assigned academic managers')
+                ->color('info'),
+
             Stat::make('🏢 Total Departments', $departmentsCount)
                 ->description('Global active institutional programs')
                 ->color('primary'),
@@ -61,6 +83,7 @@ class OfficeStatsOverview extends BaseWidget
                 ->description('Unique instructional educators')
                 ->color('info'),
 
+            // --- Row 2 ---
             Stat::make('🎓 Active Enrolled Students', $enrolledStudentsCount)
                 ->description('Approved structural student records')
                 ->descriptionIcon('heroicon-m-user-group')
@@ -69,6 +92,14 @@ class OfficeStatsOverview extends BaseWidget
             Stat::make('📊 Enrollment Submissions', $totalPipelineStudents)
                 ->description('Total enrollment requests handled')
                 ->color('gray'),
+
+            
+
+            
+            Stat::make('📢 Broadcasted Announcements', $announcementsCount)
+                ->description('Total active institutional notices')
+                ->descriptionIcon('heroicon-m-megaphone')
+                ->color('danger'),
         ];
     }
 }

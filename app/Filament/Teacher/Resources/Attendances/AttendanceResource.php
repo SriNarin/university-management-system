@@ -38,7 +38,8 @@ class AttendanceResource extends Resource
     protected static ?string $model = Attendance::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::PresentationChartBar;
-    protected static \UnitEnum|string|null $navigationGroup = 'Attendance Management';
+    protected static \UnitEnum|string|null $navigationGroup = 'Manage Student Attendance';
+    protected static ?string $navigationLabel = 'Student Attendance Tracking';
     protected static ?string $slug = 'student-attendances Logs';
 
     // 🌟 SECURITY FILTER: Only load records that belong to classes taught by this logged-in teacher
@@ -96,6 +97,8 @@ class AttendanceResource extends Resource
                 TextColumn::make('teaching_date')
                     ->label('Attendance Date')
                     ->date()
+                    ->color('danger')
+                    ->weight('bold')
                     ->sortable()
                     ->searchable(),
                     
@@ -104,23 +107,27 @@ class AttendanceResource extends Resource
                     ->label('Faculty')
                     ->sortable()
                     ->searchable()
+                    ->weight('bold')
                     ->color('primary'),
                 TextColumn::make('classSchedule.schoolClass.academicStructure.department.name_en')
                     ->label('Department')
                     ->sortable()
                     ->searchable()
+                    ->weight('bold')
                     ->color('info'),
                 TextColumn::make('classSchedule.schoolClass.academicStructure.academic_level')
                     ->label('Academic Level')
                     ->formatStateUsing(fn (string $state): string => ucfirst($state))
                     ->sortable()
                     ->searchable()
+                    ->weight('bold')
                     ->color('warning'),
                 TextColumn::make('classSchedule.schoolClass.academicStructure.generation')
                     ->label('Generation')
                     ->formatStateUsing(fn (string $state): string => ucfirst($state))
                     ->sortable()
                     ->searchable()
+                    ->weight('bold')
                     ->color('success'),
                 TextColumn::make('classSchedule.schoolClass.academicStructure.year_progress')
                     ->label('Year Progress')
@@ -128,22 +135,29 @@ class AttendanceResource extends Resource
                     ->badge()
                     ->sortable()
                     ->searchable()
+                    ->weight('bold')
                     ->color('danger'),
 
                 TextColumn::make('classSchedule.schoolClass.class_code')
                     ->label('Class Code')
                     ->badge()
                     ->searchable()
+                    ->sortable()
+                    ->weight('bold')
                     ->color('success'),
                 TextColumn::make('classSchedule.schoolClass.shift')
                     ->label('Shift')
                     ->badge()
                     ->searchable()
+                    ->sortable()
+                    ->weight('bold')
                     ->color('info'),
                 TextColumn::make('classSchedule.schoolClass.room_number')
                     ->label('Room Number')
                     ->badge()
                     ->searchable()
+                    ->sortable()
+                    ->weight('bold')
                     ->color('success'),
                     
 
@@ -151,18 +165,21 @@ class AttendanceResource extends Resource
                     ->label('Subject')
                     ->searchable()
                     ->sortable()
+                    ->weight('bold')
                     ->color('warning'),
 
                 TextColumn::make('student.name')
                     ->label('Student Name')
                     ->searchable()
                     ->sortable()
+                    ->weight('bold')
                     ->color('info'),
                     
                 
                 // Inline status selector
                 TextColumn::make('status')
                     ->label('Attendance Status')
+                    ->weight('bold')
                     ->color( fn (string $state): string => match ($state) {
                         'present' => 'success',
                         'absent' => 'danger',
@@ -177,6 +194,8 @@ class AttendanceResource extends Resource
                     ->timezone('Asia/Phnom_Penh')
                     ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->searchable()
+                    ->weight('bold')
                     ->toggleable(isToggledHiddenByDefault: false),
                     
             ])

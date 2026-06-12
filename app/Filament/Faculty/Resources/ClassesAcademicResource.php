@@ -21,7 +21,7 @@ class ClassesAcademicResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ChartBarSquare;
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Academic Classes Management';
+    protected static \UnitEnum|string|null $navigationGroup = 'Manage Department & Class';
     
     protected static ?string $pluralModelLabel = 'Class Timetable Management';
 
@@ -76,14 +76,14 @@ class ClassesAcademicResource extends Resource
                     ->badge()
                     ->color('success'),
 
-                // 👨‍🏫 TEACHER DISPLAY COLUMN
-                TextColumn::make('teacher.name')
-                    ->label('Assigned Teacher')
-                    ->searchable()
-                    ->sortable()
-                    ->weight('bold')
-                    ->color('info')
-                    ->placeholder('No Teacher Assigned'),
+                // // 👨‍🏫 TEACHER DISPLAY COLUMN
+                // TextColumn::make('teacher.name')
+                //     ->label('Assigned Teacher')
+                //     ->searchable()
+                //     ->sortable()
+                //     ->weight('bold')
+                //     ->color('info')
+                //     ->placeholder('No Teacher Assigned'),
                
                 Tables\Columns\TextColumn::make('shift')
                     ->label('Shift')
@@ -105,7 +105,7 @@ class ClassesAcademicResource extends Resource
                     ->toggleable(),
 
                 // Status indicator for Teacher visibility
-                IconColumn::make('is_teacher_timetable_published')
+                IconColumn::make('is_timetable_published')
                     ->label('Timetable Ready')
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
@@ -131,54 +131,54 @@ class ClassesAcademicResource extends Resource
             ->actions([
                 // 🚀 INTERACTIVE ACTION MODAL: Prompts manager to pick a teacher before posting!
                 Action::make('publishToTeacher')
-                    ->label(fn (SchoolClass $record): string => $record->is_teacher_timetable_published ? 'Hide From Teacher' : 'Post to Teacher')
+                    ->label(fn (SchoolClass $record): string => $record->is_timetable_published ? 'Hide From Teachers' : 'Post to All Teachers')
                     ->icon('heroicon-o-paper-airplane')
-                    ->color(fn (SchoolClass $record): string => $record->is_teacher_timetable_published ? 'danger' : 'success')
+                    ->color(fn (SchoolClass $record): string => $record->is_timetable_published ? 'danger' : 'success')
                     ->requiresConfirmation()
-                    
-                    // 📑 Pop up the instructor selection form when publishing
-                    ->form(fn (SchoolClass $record) => $record->is_teacher_timetable_published ? [] : [
-                        Select::make('teacher_id')
-                            ->label('Assign Teacher Instructor')
-                            ->relationship('teacher', 'name') // Pulls from your User/Teacher model
-                            ->searchable()
-                            ->preload()
-                            ->default($record->teacher_id)
-                            ->required(),
-                    ])
-                    
-                    // 💾 Execute pivot table synchronization alongside status updates
-                    ->action(function (SchoolClass $record, array $data) {
-                        if ($record->is_teacher_timetable_published) {
+                    ->modalHeading('Publish Complete Timetable Matrix')
+                    ->modalDescription('This will parse all schedules, read the assigned teachers for each subject slot, and publish them directly to their respective dashboards automatically.')
+                    ->action(function (SchoolClass $record) {
+                        if ($record->is_timetable_published) {
                             // --- UNPUBLISHING CODE ---
-                            // 1. Remove the teacher from the class_user pivot table if they exist
-                            if ($record->teacher_id) {
-                                // If using a standard Many-to-Many relationship named 'users' on your SchoolClass model:
-                                $record->users()->detach($record->teacher_id);
-                                
-                                // ALTERNATIVE (If you have a explicit 'teachers' relationship instead):
-                                // $record->teachers()->detach($record->teacher_id);
+                            
+                            // 1. Get all teachers assigned to this class schedules matrix to clean pivot maps
+                            $assignedTeacherIds = $record->classSchedules()
+                                ->whereNotNull('teacher_id')
+                                ->pluck('teacher_id')
+                                ->unique()
+                                ->toArray();
+
+                            if (!empty($assignedTeacherIds)) {
+                                $record->users()->detach($assignedTeacherIds);
                             }
 
-                            // 2. Turn off the publication flag
+                            // 2. Hide the timetable globally
                             $record->update([
-                                'is_teacher_timetable_published' => false,
+                                'is_timetable_published' => false,
                             ]);
+                            
                         } else {
-                            // --- PUBLISHING CODE ---
-                            $newTeacherId = $data['teacher_id'];
+                            // --- AUTOMATIC BULK PUBLISHING CODE ---
 
-                            // 1. Update the parent class row with the teacher reference
+                            // 1. Scan the schedule grid slots to extract all assigned unique teacher IDs
+                            $assignedTeacherIds = $record->classSchedules()
+                                ->whereNotNull('teacher_id')
+                                ->pluck('teacher_id')
+                                ->unique()
+                                ->toArray();
+
+                            // 2. Turn on publication flag on the parent class level
                             $record->update([
-                                'teacher_id' => $newTeacherId,
-                                'is_teacher_timetable_published' => true,
-                        ]);
+                                'is_timetable_published' => true,
+                            ]);
 
-                        // 2. Sync into the class_user pivot table so the dashboard queries can read it!
-                        // using syncWithoutDetaching ensures we don't accidentally remove enrolled students!
-                        $record->users()->syncWithoutDetaching([$newTeacherId]);
-                    }
-                }),
+                            // 3. 🚀 Automatically sync ALL detected teachers to the pivot array at once
+                            // using syncWithoutDetaching prevents breaking existing student enrollment rows!
+                            if (!empty($assignedTeacherIds)) {
+                                $record->users()->syncWithoutDetaching($assignedTeacherIds);
+                            }
+                        }
+                    }),
             ])
             ->bulkActions([])
             ->recordUrl(null);

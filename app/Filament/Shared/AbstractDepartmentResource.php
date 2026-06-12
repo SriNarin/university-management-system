@@ -11,7 +11,7 @@ use Filament\Tables\Table;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Repeater; // <-- FIXED: Changed from HasManyRepeater to standard Repeater
+use Filament\Forms\Components\Repeater; 
 
 // TABLE LAYOUT IMPORTS
 use Filament\Tables\Columns\TextColumn;
@@ -34,25 +34,19 @@ abstract class AbstractDepartmentResource extends Resource
                 ->description('Define the department details and manage its associated academic structures and class schedules.')
                 ->schema([
                     Select::make('faculty_id')
-                        ->label('Assigned  Faculty')
+                        ->label('Assigned Faculty')
                         ->relationship('faculty', 'name_en')
                         ->searchable()
                         ->preload()
                         ->required()
-                        // AUTOMATIC FILL: Fetches the managed faculty ID automatically
                         ->default(function () {
                             if (Auth::check() && strtolower(Auth::user()->role) === 'faculty_manager') {
                                 return \App\Models\Faculty::where('manager_id', Auth::id())->first()?->id;
                             }
                             return null;
                         })
-                        // REPLACEMENT RULES FOR MANAGERS:
-                        // If they are a faculty manager, lock the input field so they can't change it, 
-                        // but tell Filament to explicitly include it in the SQL save query payload!
                         ->disabled(fn () => Auth::check() && strtolower(Auth::user()->role) === 'faculty_manager')
                         ->dehydrated(true),
-                    
-                    
 
                     TextInput::make('name_en')
                         ->label('Department Title (English)')
@@ -69,10 +63,10 @@ abstract class AbstractDepartmentResource extends Resource
             Section::make('Academic Structure & Classes Management')
                 ->description('Manage active classroom shifts, generations, levels, and sections inside this department.')
                 ->schema([
-                    // FIXED: Changed from HasManyRepeater to Repeater
+                    
                     Repeater::make('academicStructures')
-                        ->relationship('academicStructures')
-                        ->label('Academic Classes Structures ')
+                        ->relationship('academicStructures') // Maps Department -> AcademicStructure
+                        ->label('Academic Classes Structures')
                         ->collapsible()
                         ->cloneable()
                         ->defaultItems(0)
@@ -102,12 +96,12 @@ abstract class AbstractDepartmentResource extends Resource
                                 ])->required()
                                 ->preload(),
 
-                            
-
-                            // FIXED: Changed nested element from HasManyRepeater to Repeater
+                            // ⚡ CRITICAL FIX: The nested relationship repeater needs relationship context 
+                            // to automatically inject the newly created academic_structure_id on save.
                             Repeater::make('schoolClasses')
-                                ->relationship('schoolClasses')
-                                ->label('Assigned Group Classes Section ')
+                                ->relationship('schoolClasses') // Maps AcademicStructure -> SchoolClass
+                                ->label('Assigned Group Classes Section')
+                                ->defaultItems(1)
                                 ->schema([
                                     Select::make('semester')
                                         ->label('Term Semester')
@@ -122,7 +116,6 @@ abstract class AbstractDepartmentResource extends Resource
                                             'other' => 'Other Term',
                                         ])->required()
                                         ->preload(),
-
                                    
                                     Select::make('shift')
                                         ->label('Study Shift Timing')
@@ -134,12 +127,12 @@ abstract class AbstractDepartmentResource extends Resource
                                             'full_day' => 'Full Day Program',
                                             'online' => 'Online Program',
                                             'other' => 'Other Shift',
-
                                         ])->required()
                                         ->preload()
                                         ->live(),
+
                                     TextInput::make('class_code')
-                                        ->label('Class Room Section Code ')
+                                        ->label('Class Room Section Code')
                                         ->placeholder('e.g., M1, E2, WE1')
                                         ->required()
                                         ->maxLength(255),
@@ -148,65 +141,60 @@ abstract class AbstractDepartmentResource extends Resource
                                         ->label('Room Number')
                                         ->nullable()
                                         ->placeholder('e.g., 303, 505')
-            
-                                        // Dynamic Requirement Rule: Required ONLY if the shift is NOT set to 'online'
                                         ->required(fn ($get) => $get('shift') !== 'online')
-                                        
-                                        // Dynamic Visibility Rule: Hide the field completely if 'online' is selected
                                         ->hidden(fn ($get) => $get('shift') === 'online')
-                                        
-                                        // Optional Safety: Clear out any typed value if the user changes shift to online mid-edit
-                                        ->live(),    // No unique constraints here
-                                        ])->columns(1)->defaultItems(1)
-
-                                        
-                                ])->columns(2)
-                        ])
-                ]);
+                                        ->live(), 
+                                ])->columns(1)
+                        ])->columns(2)
+                ])
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-        
             ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) => 
                 $query->withCount('schoolClasses')
             )
-
             ->columns([
                 TextColumn::make('id')
                     ->label('ID Ref')
+                    ->searchable()
+                    ->weight('bold')
                     ->sortable(),
 
                 TextColumn::make('faculty.name_en')
                     ->label('Faculty')
+                    ->color('info')
+                    ->weight('bold')
                     ->searchable()
                     ->sortable(),
-                   
 
                 TextColumn::make('name_en')
                     ->label('Department (EN)')
+                    ->weight('bold')
+                    ->color('warning')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('name_kh')
                     ->label('Department (KH)')
+                    ->weight('bold')
                     ->searchable(),
 
                 TextColumn::make('school_classes_count')
                     ->label('Actual Classes Count')
-                    ->counts('schoolClasses')
                     ->badge()
-                    ->color('info')
+                    ->color('danger')
+                    ->weight('bold')
                     ->sortable(),
-                
-                
 
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->timezone('Asia/Phnom_Penh')
                     ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->weight('bold')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
@@ -214,7 +202,6 @@ abstract class AbstractDepartmentResource extends Resource
                     ->label('Filter By Faculty Body')
                     ->relationship('faculty', 'name_en')
                     ->searchable(),
-                    
             ])
             ->actions([
                 ViewAction::make()->color('gray'),

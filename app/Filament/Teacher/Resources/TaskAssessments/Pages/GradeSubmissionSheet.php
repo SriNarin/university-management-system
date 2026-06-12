@@ -142,7 +142,7 @@ class GradeSubmissionSheet extends Page
                                         'image/webp'
                                     ])
                                     ->directory('academic-submissions-vault')
-                                    ->visibility('private'),
+                                    ->visibility('public'),
                             ])->columns(3),
                     ])
             ])

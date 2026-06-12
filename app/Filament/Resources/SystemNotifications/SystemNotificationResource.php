@@ -14,17 +14,18 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Filament\Support\Icons\Heroicon;
 
-// CORRECT FILAMENT SCHEMAS FIELDS IMPORTS 
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden; 
 
-// CORRECT FILAMENT TABLES COLUMNS & FILTERS IMPORTS
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 
-// CORRECT FILAMENT ACTIONS IMPORTS
+// Using table specific action structures for Filament v3
+use Filament\Actions\Action as TableAction; 
 use Filament\Actions\ViewAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
@@ -34,7 +35,6 @@ use Filament\Actions\DeleteBulkAction;
 use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 
-
 class SystemNotificationResource extends Resource
 {
     protected static ?string $model = SystemNotification::class;
@@ -43,42 +43,33 @@ class SystemNotificationResource extends Resource
 
     protected static \UnitEnum|string|null $navigationGroup = 'Notifications & Announcements';
 
-    /**
-     * EVERYONE can access this resource to view, send, and check alerts 
-     * specific to their user scope dashboard permissions.
-     */
     public static function canAccess(): bool
     {
         return Auth::check();
     }
 
-    /**
-     * Limits the dashboard datatable grid list based on the user's role.
-     * - Admins see ALL sent and received message trails.
-     * - Faculty, Office, Teachers, and Students see messages addressed specifically 
-     * to them individually, or sent to their matching Role Group.
-     */
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Admins maintain full master database overview control
+        // Admins can see absolutely everything
         if (\Illuminate\Support\Str::lower($user->role) === 'admin') {
             return parent::getEloquentQuery();
         }
 
-        // Restrict dashboards to intercept messages meant for them or broadcasted to their role group
-        return parent::getEloquentQuery()
-            ->where('sender_id', $user->id) // Messages they sent out
-            ->orWhere(function ($query) use ($user) {
-                $query->where('recipient_type', 'individual')
-                    ->where('receiver', (string) $user->id);
-            })
-            ->orWhere(function ($query) use ($user) {
-                $query->where('recipient_type', 'role') 
-                    ->where('receiver', $user->role);
-            });
+        // Clean up scoping so users can read what they sent OR what was sent to them (Individual or Role)
+        return parent::getEloquentQuery()->where(function ($query) use ($user) {
+            $query->where('sender_id', $user->id)
+                ->orWhere(function ($q) use ($user) {
+                    $q->where('recipient_type', 'individual')
+                      ->where('receiver', (string) $user->id);
+                })
+                ->orWhere(function ($q) use ($user) {
+                    $q->where('recipient_type', 'role')
+                      ->where('receiver', $user->role);
+                });
+        });
     }
 
     public static function form(Schema $schema): Schema
@@ -86,7 +77,7 @@ class SystemNotificationResource extends Resource
         return $schema->components([
             Section::make('Compose System Alert & Dashboard Message Dispatcher')
                 ->schema([
-                   Select::make('sender_id')
+                    Select::make('sender_id')
                         ->label('Message Sender')
                         ->options(User::pluck('name', 'id'))
                         ->default(Auth::id()) 
@@ -129,7 +120,7 @@ class SystemNotificationResource extends Resource
                         ->maxLength(255),
 
                     TextInput::make('message_body')
-                        ->label('Write Your Message Here')
+                        ->label('Message Here')
                         ->required()
                         ->maxLength(5000),
 
@@ -152,22 +143,30 @@ class SystemNotificationResource extends Resource
                 TextColumn::make('sender.name')
                     ->label('From Sender')
                     ->searchable()
-                    ->sortable(),
+                    ->color('info')
+                    ->weight('bold')
+                    ->sortable()
+                    ->default('System Alert'),
 
                 TextColumn::make('message_subject')
                     ->label('Subject Heading')
+                    ->weight('bold')
                     ->searchable(),
 
                 TextColumn::make('recipient_type')
                     ->label('Recipient Type')
                     ->badge()
+                    ->sortable()
+                    ->weight('bold')
+                    ->color('warning')
                     ->color(fn ($state) => $state === 'role' ? 'warning' : 'success'),
 
                 TextColumn::make('receiver')
                         ->label('To Recipient')
                         ->searchable()
                         ->badge()
-                        ->color('blue')
+                        ->color('success')
+                        ->weight('bold')
                         ->formatStateUsing(function ($state, $record) {
                             if ($record->recipient_type === 'role') {
                                 return str_replace('_', ' ', ucfirst($state)) . 's Group';
@@ -190,8 +189,9 @@ class SystemNotificationResource extends Resource
                     ->label('Created At')
                     ->timezone('Asia/Phnom_Penh')
                     ->sortable()
-                    ->dateTime('M d Y, H:i')
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->weight('bold')
+                    ->color('danger')
+                    ->dateTime('M d Y, H:i'),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
@@ -203,9 +203,75 @@ class SystemNotificationResource extends Resource
                     ])
             ])
             ->actions([
+                TableAction::make('reply')
+                    ->label('Reply')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->color('success')
+                    ->size('sm')
+                    // Hide if the user sent it, or if there is no valid sender to reply to
+                    ->hidden(fn ($record) => $record->sender_id === Auth::id() || !$record->sender_id)
+                    ->modalHeading(function (SystemNotification $record) {
+                        $sender = User::find($record->sender_id);
+                        return "Reply to " . ($sender?->name ?? 'Sender');
+                    })
+                    ->modalWidth('lg')
+                    // 🌟 FIX: Use ($canvas) hook parameters to safely capture current row model lifecycle
+                    ->mountUsing(function (array &$data, $record): void {
+                        if ($record && $record->sender_id) {
+                            $sender = User::find($record->sender_id);
+                            if ($sender) {
+                                $senderName = $sender->name;
+                                $senderRole = str_replace('_', ' ', ucfirst($sender->role ?? 'User'));
+                                $data['replying_to_name'] = "{$senderName} ({$senderRole})";
+                            } else {
+                                $data['replying_to_name'] = "Staff Account";
+                            }
+                            $data['message_subject'] = 'Re: ' . ($record->message_subject ?? 'Notification Update');
+                        } else {
+                            $data['replying_to_name'] = "Unknown Sender";
+                            $data['message_subject'] = 'Re: Notification Update';
+                        }
+                    })
+                    ->form([
+                        TextInput::make('replying_to_name')
+                            ->label('Replying Direct To')
+                            ->disabled()
+                            ->dehydrated(false),
+
+                        TextInput::make('message_subject')
+                            ->label('Subject Heading')
+                            ->required()
+                            ->maxLength(255),
+
+                        Textarea::make('message_body')
+                            ->label('Your Message Response')
+                            ->placeholder('Type your reply here...')
+                            ->rows(4)
+                            ->required()
+                            ->maxLength(5000),
+                    ])
+                    ->action(function (array $data, SystemNotification $record): void {
+                        $replyNotification = SystemNotification::create([
+                            'sender_id'       => Auth::id(),
+                            'recipient_type'  => 'individual', 
+                            'receiver'        => (string) $record->sender_id, // Routes back straight to the record owner
+                            'message_subject' => $data['message_subject'],
+                            'message_body'    => $data['message_body'],
+                            'attachment_path' => null,
+                        ]);
+
+                        // Send database notification update
+                        static::afterCreate($replyNotification);
+
+                        Notification::make()
+                            ->title('Reply Sent Directly to Sender')
+                            ->success()
+                            ->send();
+                    }),
+
                 ViewAction::make()->color('gray')->icon('heroicon-s-eye')->size('sm'),
-                EditAction::make()->color('info')->icon('heroicon-s-pencil')->size('sm')->visible(fn ($record) => fn () => (Auth::user()->role === 'admin' || Auth::user()->role === 'faculty_manager')),
-                DeleteAction::make()->color('danger')->icon('heroicon-s-trash')->size('sm')->visible(fn ($record) => fn () => (Auth::user()->role === 'admin' || Auth::user()->role === 'faculty_manager')),
+                EditAction::make()->color('info')->icon('heroicon-s-pencil')->size('sm')->visible(fn () => (Auth::user()->role === 'admin' || Auth::user()->role === 'faculty_manager')),
+                DeleteAction::make()->color('danger')->icon('heroicon-s-trash')->size('sm')->visible(fn () => (Auth::user()->role === 'admin' || Auth::user()->role === 'faculty_manager')),
             ])
              ->bulkActions([
                 BulkActionGroup::make([
@@ -214,17 +280,12 @@ class SystemNotificationResource extends Resource
             ]);
     }
 
-    /**
-     * 🌟 NEW PROPERTY HOOK: Intercepts the created notification and dispatches 
-     * it directly into the target user's Filament database notification center tray.
-     */
     public static function afterCreate($record): void
     {
         $senderName = Auth::user()->name ?? 'System Alert';
         $titleText = $record->message_subject ?? 'New Message Alert';
         $bodyText = substr($record->message_body, 0, 80) . '...';
 
-        // Case A: Sending notification to an Individual target account
         if ($record->recipient_type === 'individual' && is_numeric($record->receiver)) {
             $targetUser = User::find($record->receiver);
             if ($targetUser) {
@@ -237,11 +298,9 @@ class SystemNotificationResource extends Resource
             }
         }
 
-        // Case B: Broadking notification to an entire Role group track
         if ($record->recipient_type === 'role' && !empty($record->receiver)) {
-            // Find all users matching that exact group context role string
             $targetGroupUsers = User::where('role', $record->receiver)
-                ->where('id', '!=', Auth::id()) // Don't trigger popup for yourself
+                ->where('id', '!=', Auth::id())
                 ->get();
 
             foreach ($targetGroupUsers as $groupUser) {

@@ -4,11 +4,15 @@ namespace App\Filament\Teacher\Resources\TaskAssessments\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Forms\Form;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\TextInputColumn; // 🌟 Form input straight inside the table row
+use Filament\Tables\Columns\TextInputColumn;
+use Filament\Actions\Action; // Correct import for Table Actions
 use Illuminate\Support\HtmlString;
-use Filament\Schemas\schema;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SubmissionsRelationManager extends RelationManager
 {
@@ -16,7 +20,6 @@ class SubmissionsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'id';
 
-    // Disabling the separate create/edit form views since we are editing inline
     public function form(Schema $schema): Schema
     {
         return $schema->schema([]);
@@ -30,49 +33,79 @@ class SubmissionsRelationManager extends RelationManager
                 TextColumn::make('student.name')
                     ->label('Student Name')
                     ->searchable()
+                    ->color('info')
+                    ->weight('bold')
                     ->sortable(),
 
                 TextColumn::make('created_at')
                     ->label('Submission Date')
                     ->dateTime('M d, Y h:i A')
+                    ->sortable()
+                    ->searchable()
+                    ->weight('bold')
                     ->timezone('Asia/Phnom_Penh'),
 
-                // 📂 Clickable link to download files directly from the table row
-                TextColumn::make('attachment_file_path')
-                    ->label('Student Attachment')
-                    ->formatStateUsing(function ($state) {
-                        if (!$state) {
-                            return 'No file (QCM/Text)';
-                        }
-                        return new HtmlString('
-                            <a href="' . asset('storage/' . $state) . '" target="_blank" download style="color: #4f46e5; text-decoration: underline; font-weight: bold;">
-                                📥 Download File
-                            </a>
-                        ');
-                    }),
+                // 📂 Status Display Indicator
+                
 
-                TextColumn::make('submission_notes')
-                    ->label('Student Notes')
-                    ->limit(20)
-                    ->tooltip(fn ($record) => $record->submission_notes),
+               
 
-                // 📝 Teacher types the score directly here. Filament saves it automatically!
                 TextInputColumn::make('secured_score')
                     ->label('Score')
                     ->type('number')
+                    ->sortable()
+                    ->weight('bold')
+                    ->searchable()
+                    ->color('danger')
                     ->rules(['numeric', 'min:0']),
 
-                // 📝 Teacher types the grade letter directly here. Saves automatically!
                 TextInputColumn::make('grade_letter')
                     ->label('Grade Letter')
+                    ->sortable()
+                    ->weight('bold')
+                    ->searchable()
+                    ->color('info')
                     ->rules(['max:2']),
 
-                // 📝 Teacher types brief notes directly here. Saves automatically!
                 TextInputColumn::make('teacher_feedback')
                     ->label('Feedback Remarks'),
+                    
+                 TextColumn::make('submission_notes')
+                    ->label('Student Notes')
+                    ->limit(20)
+                    ->weight('bold')
+                    ->tooltip(fn ($record) => $record->submission_notes),
+                TextColumn::make('attachment_file_path')
+                    ->label('Student Attachment')
+                    ->formatStateUsing(fn ($state) => $state ? '📄 File Submitted' : 'No file (QCM/Text)')
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->weight('bold'),
             ])
             ->filters([])
             ->headerActions([])
-            ->actions([]); // ❌ COMPLETELY EMPTY. No EditAction or row buttons used.
+            ->actions([
+               
+                   
+                // This action downloads files directly through Laravel's backend storage vault
+                Action::make('download')
+                    ->label('Download Student Submission file')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('primary')
+                    ->visible(fn ($record) => !empty($record->attachment_file_path))
+                    ->action(function ($record): StreamedResponse | null {
+                        // Check if file exists on the default storage disk (or specify 'public' if needed)
+                        if (!Storage::exists($record->attachment_file_path)) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('File not found on server')
+                                ->body('The physical file could not be found in the storage vault.')
+                                ->danger()
+                                ->send();
+                            return null;
+                        }
+
+                        // Stream the file down directly without needing a public URL link
+                        return Storage::download($record->attachment_file_path);
+                    }),
+            ]);
     }
 }

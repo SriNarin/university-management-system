@@ -198,6 +198,8 @@ class StudentTaskExecutionResource extends Resource
                     ->label('Submission Deadline')
                     ->timezone('Asia/Phnom_Penh')
                     ->dateTime('M d Y, h:i A')
+                    ->color('danger')
+                    ->weight('bold')
                     ->sortable(),
 
                 TextColumn::make('id')
@@ -217,6 +219,7 @@ class StudentTaskExecutionResource extends Resource
                     ->badge()
                     ->color(fn ($state) => str_contains($state, 'Not Submitted') ? 'danger' : 'success'),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([])
             ->actions([
                 // Handled via ViewAction clicking natively

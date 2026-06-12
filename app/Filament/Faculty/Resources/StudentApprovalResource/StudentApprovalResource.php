@@ -21,7 +21,7 @@ class StudentApprovalResource extends Resource
     protected static ?string $model = ClassUser::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCheckBadge;
-    protected static \UnitEnum|string|null $navigationGroup = 'Students Management';
+    protected static \UnitEnum|string|null $navigationGroup = 'Students & Result Management';
     protected static ?string $pluralModelLabel = 'Student Enrollment Approvals';
 
     public static function canAccess(): bool
@@ -40,35 +40,54 @@ class StudentApprovalResource extends Resource
             ->columns([
                 TextColumn::make('student.name')
                     ->label('Student')
+                    ->color('danger')
+                    ->weight('bold')
                     ->searchable(),
-
+                TextColumn::make('schoolClass.academicStructure.department.faculty.name_en')
+                    ->label('Faculty')
+                    ->searchable()
+                    ->weight('bold')
+                    ->color('warning'),
                  TextColumn::make('schoolClass.academicStructure.department.name_en')
                     ->label('Department')
                     ->searchable()
-                    ->color('warning'),
+                    ->weight('bold')
+                    ->color('info'),
                 TextColumn::make('schoolClass.academicStructure.academic_level')
                     ->label('Academic Level')
                     ->searchable()
+                    ->weight('bold')
+                    ->color('success'),
+                TextColumn::make('schoolClass.academicStructure.generation')
+                    ->label('Generation')
+                    ->searchable()
+                    ->weight('bold')
                     ->color('warning'),
 
                 TextColumn::make('schoolClass.academicStructure.year_progress')
                     ->label('Year Progress')
                     ->searchable()
-                    ->color('warning'),
+                    ->weight('bold')
+                    ->color('info'),
 
                 TextColumn::make('schoolClass.class_code')
                     ->label('Class Code')
+                    ->searchable()
+                    ->color('danger')
+                    ->weight('bold')
                     ->badge(),
 
                 TextColumn::make('schoolClass.shift')
                     ->label('Shift')
                     ->searchable()
+                    ->weight('bold')
                     ->color('warning'),
 
                 TextColumn::make('schoolClass.room_number')
                     ->label('Room Number')
                     ->searchable()
-                    ->color('warning'),
+                    ->weight('bold')
+                    ->color('info'),
 
                 
                 TextColumn::make('enrollment_type')
@@ -101,6 +120,8 @@ class StudentApprovalResource extends Resource
                     ->timezone('Asia/Phnom_Penh')
                    ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->searchable()
+                    ->weight('bold')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([

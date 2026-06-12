@@ -38,7 +38,7 @@ class FacultyResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Faculty Management';
+    protected static \UnitEnum|string|null $navigationGroup = 'Manage Faculty & Department';
 
 
     public static function form(Schema $schema): Schema
@@ -85,12 +85,14 @@ class FacultyResource extends Resource
         return $table
             ->columns([
                 // TextColumn::make('code')->sortable()->searchable(),
-                TextColumn::make('name_en')->searchable()->label('Name (EN)'),
-                TextColumn::make('name_kh')->label('Name (KH)'),
+                TextColumn::make('name_en')->searchable()->label('Name (EN)')->color('info')->sortable()->weight('bold'),
+                TextColumn::make('name_kh')->label('Name (KH)')->weight('bold')->sortable()->searchable(),
                 
                 // Displays the name of the linked Faculty Manager on your data table grid
                 TextColumn::make('users.name')
                     ->label('Faculty Manager')
+                    ->weight('bold')
+                    ->color('danger')
                     ->getStateUsing(function ($record) {
                             // Explicitly fetches the user's name from the DB using the manager_id column value
                             return \App\Models\User::find($record->manager_id)?->name ?? 'No Manager Assigned';
@@ -110,6 +112,7 @@ class FacultyResource extends Resource
                     ->label('Created At')
                     ->timezone('Asia/Phnom_Penh')
                     ->sortable()
+                    ->weight('bold')
                     ->dateTime('M d Y, H:i')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])

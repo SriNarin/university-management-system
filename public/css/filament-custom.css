@@ -1,0 +1,179 @@
+.fi-main {
+    animation: fadeInPage 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes fadeInPage {
+    0% {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 🏢 Global Background (Light) */
+body.fi-body {
+    background-color: #f4f6f9 !important;
+}
+
+/* 🏢 Global Background (Dark Override) */
+.dark body.fi-body {
+    background-color: #1c2843 !important; /* Deep Slate Blue-Gray */
+}
+
+/* 📟 Header Top Bar - Light Mode */
+.fi-topbar {
+    background-color: #c4d8f7 !important;
+    position: static !important;
+    height: 50px !important;
+    margin: 16px 16px 0px 16px !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.05),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* 📟 Header Top Bar - Dark Mode */
+.dark .fi-topbar {
+    background-color: #161f2c !important; /* Muted Slate Card Background */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+.fi-topbar nav {
+    background-color: lab(98.86% -4.01 1.83) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important; /* Fixed 100px border mistake to 1px */
+    margin: 16px 16px 0px 16px !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.05),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* 📟 Header Top Bar Nav - Dark Mode */
+.dark .fi-topbar nav {
+    background-color: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Light accent border line */
+}
+
+/* Safely force deep child blocks to respect the 24px wrapper curves */
+.fi-topbar nav > div,
+.fi-topbar header {
+    border-radius: 24px !important;
+}
+
+/* 🧭 Sidebar Container - Light Mode */
+.fi-sidebar {
+    background-color: #c4d8f7 !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    margin: 16px 0px 16px 16px !important;
+    border-radius: 16px !important;
+    height: calc(100vh - 32px) !important;
+    overflow: hidden !important;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.05),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* 🧭 Sidebar Container - Dark Mode */
+.dark .fi-sidebar {
+    background-color: #1a222f !important; /* Solid Dark Slate */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 🏷️ Sidebar Header - Light Mode */
+.fi-sidebar-header {
+    background-color: #1091ed !important;
+    border-bottom: 1px solid #360be3 !important;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
+}
+
+/* 🏷️ Sidebar Header - Dark Mode */
+.dark .fi-sidebar-header {
+    background-color: #0f172a !important; /* Slightly darker header for contrast */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.fi-sidebar-header em,
+.fi-sidebar-header span,
+.fi-sidebar-header h1 {
+    color: #f389ea !important;
+}
+
+/* Sidebar Default Items Text & Icons - Light Mode */
+.fi-sidebar span,
+.fi-sidebar svg,
+.fi-sidebar p,
+.fi-sidebar-item-button {
+    color: #000000 !important;
+}
+.fi-sidebar-group button svg {
+    color: #32e0b8 !important;
+}
+
+/* 🌙 Sidebar Default Items Text & Icons - Dark Mode */
+.dark .fi-sidebar span,
+.dark .fi-sidebar p,
+.dark .fi-sidebar-item-button {
+    color: #94a3b8 !important; /* Clean soft white/gray text */
+}
+.dark .fi-sidebar svg {
+    color: #38bdf8 !important; /* Cool cyan tone for inactive icons in dark mode */
+}
+
+/* 👥 Sidebar Interactions */
+.fi-sidebar-item-button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-radius: 8px !important;
+}
+
+/* 🌟 Hover State - Light Mode */
+.fi-sidebar-item-button:hover {
+    background-color: #6fef80 !important;
+    transform: translateX(5px);
+}
+.fi-sidebar-item-button:hover span,
+.fi-sidebar-item-button:hover svg {
+    color: #58eb78 !important;
+}
+
+/* 🌟 Hover State - Dark Mode */
+.dark .fi-sidebar-item-button:hover {
+    background-color: #334155 !important; /* Slate dark hover background */
+}
+.dark .fi-sidebar-item-button:hover span,
+.dark .fi-sidebar-item-button:hover svg {
+    color: #38bdf8 !important; /* Glowing neon accent cyan text on hover */
+}
+
+/* 🌟 Selected Resource State - Light Mode */
+.fi-sidebar-item-active,
+.fi-sidebar-item-active a,
+.fi-sidebar-item-button.fi-active {
+    background-color: #66f674 !important;
+    box-shadow: 0 4px 10px -2px rgba(79, 70, 229, 0.4) !important;
+}
+.fi-sidebar-item-active svg,
+.fi-sidebar-item-active span,
+.fi-sidebar-item-button.fi-active svg,
+.fi-sidebar-item-button.fi-active span {
+    color: #5cf45a !important;
+}
+
+/* 🌟 Selected Resource State - Dark Mode */
+.dark .fi-sidebar-item-active,
+.dark .fi-sidebar-item-active a,
+.dark .fi-sidebar-item-button.fi-active {
+    background-color: #0284c7 !important; /* Deep Ocean Blue active block */
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4) !important;
+}
+.dark .fi-sidebar-item-active svg,
+.dark .fi-sidebar-item-active span,
+.dark .fi-sidebar-item-button.fi-active svg,
+.dark .fi-sidebar-item-button.fi-active span {
+    color: #ffffff !important; /* Bright crisp white for high visibility */
+}

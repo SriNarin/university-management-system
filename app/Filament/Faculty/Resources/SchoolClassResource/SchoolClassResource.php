@@ -14,7 +14,7 @@ class SchoolClassResource extends AbstractSchoolClassResource
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice2;
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Academic Classes Management';
+    protected static \UnitEnum|string|null $navigationGroup = 'Manage Department & Class';
     
     protected static ?string $pluralModelLabel = 'Classes Academic';
 

@@ -70,13 +70,15 @@
                                             </div>
                                         </td>
                                         <td style="padding: 1rem; text-align: right; vertical-align: middle;">
-                                            {{-- 🌟 UPDATED: Checks and resolves resource_attachment_path fields --}}
+                                            {{-- 🌟 FIXED: Triggers the backend secure stream function natively --}}
                                             @if($material->resource_attachment_path)
-                                                <a href="{{ asset('storage/' . $material->resource_attachment_path) }}" download 
-                                                   style="display: inline-flex; align-items: center; background-color: #4f46e5; color: white; padding: 0.5rem 0.8rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 700; text-decoration: none; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);"
+                                                <button 
+                                                    type="button"
+                                                    wire:click="downloadMaterial({{ $material->id }})" 
+                                                    style="display: inline-flex; align-items: center; background-color: #4f46e5; color: white; padding: 0.5rem 0.8rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); border: none;"
                                                 >
-                                                   📥 Download
-                                                </a>
+                                                    📥 Download
+                                                </button>
                                             @else
                                                 <span style="font-size: 0.75rem; color: #9ca3af; font-style: italic;">No attachment</span>
                                             @endif
@@ -113,32 +115,62 @@
                                     <th style="padding: 1rem; text-align: right;">Tracked Status</th>
                                 </tr>
                             </thead>
-                            <tbody style="color: #4b5563;">
-                                @forelse($this->attendanceHistory as $log)
-                                    <tr style="border-bottom: 1px solid #f3f4f6;">
-                                        <td style="padding: 1rem; font-weight: 600; color: #111827; vertical-align: middle;">
-                                            {{ $log->classSchedule?->session_date ?? ($log->created_at ? $log->created_at->format('M d, Y') : 'N/A') }}
-                                        </td>
-                                        <td style="padding: 1rem; text-align: right; vertical-align: middle;">
-                                            @php
-                                                $status = strtolower($log->status ?? '');
-                                                $bg = '#fef2f2'; $color = '#991b1b'; // absent default
-                                                if ($status === 'present') { $bg = '#ecfdf5'; $color = '#065f46'; }
-                                                elseif (in_array($status, ['permission', 'excused'])) { $bg = '#fffbeb'; $color = '#92400e'; }
-                                            @endphp
-                                            <span style="display: inline-block; background-color: #374151 ; color: #4b5563 ; padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
-                                                {{ $log->status ?? 'ABSENT' }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="2" style="padding: 2.5rem; text-align: center; color: #9ca3af; font-style: italic;">
-                                            No session attendance recorded yet.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
+                           {{-- Replace the <tbody> section inside your Attendance History Log table with this --}}
+                        <tbody style="color: #4b5563;">
+                            @forelse($this->attendanceHistory as $log)
+                                <tr style="border-bottom: 1px solid #f3f4f6;">
+                                    <td style="padding: 1rem; vertical-align: middle;">
+                                        {{-- Principal Class Session Date --}}
+                                        <div style="font-weight: 700; color: #111827;">
+                                            {{ $log->classSchedule?->session_date ?? ($log->created_at ? $log->created_at->timezone('Asia/Phnom_Penh')->format('M d, Y') : 'N/A') }}
+                                        </div>
+                                        {{-- 🕒 Exact Timestamp when the Teacher submitted/marked the attendance --}}
+                                        @if($log->created_at)
+                                            <div style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; display: flex; align-items: center; gap: 0.25rem;">
+                                                <span>⏰ Tracked at:</span>
+                                                <span style="font-weight: 600; color: #4f46e5;">
+                                                    {{ $log->created_at->timezone('Asia/Phnom_Penh')->format('h:i A') }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td style="padding: 1rem; text-align: right; vertical-align: middle;">
+                                        @php
+                                            $status = strtolower($log->status ?? 'absent');
+                                            
+                                            switch ($status) {
+                                                case 'present':
+                                                    $bg = '#ecfdf5'; $color = '#065f46';
+                                                    break;
+                                                case 'permission':
+                                                case 'excused':
+                                                    $bg = '#eff6ff'; $color = '#1e40af';
+                                                    break;
+                                                case 'late':
+                                                    $bg = '#fefce8'; $color = '#854d0e';
+                                                    break;
+                                                case 'absent':
+                                                default:
+                                                    $bg = '#fef2f2'; $color = '#991b1b';
+                                                    break;
+                                            }
+
+                                            $badgeStyle = "display: inline-block; background-color: {$bg}; color: {$color}; padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;";
+                                        @endphp
+                                        
+                                        <span style="{!! $badgeStyle !!}">
+                                            {{ $log->status ?? 'ABSENT' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" style="padding: 2.5rem; text-align: center; color: #9ca3af; font-style: italic;">
+                                        No session attendance recorded yet.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
                         </table>
                     </div>
                 </x-filament::section>

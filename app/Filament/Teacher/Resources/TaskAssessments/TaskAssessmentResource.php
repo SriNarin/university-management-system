@@ -142,23 +142,27 @@ class TaskAssessmentResource extends Resource
                     ->label('Faculty')
                     ->sortable()
                     ->searchable()
-                    ->color('primary'),
+                    ->weight('bold')
+                    ->color('danger'),
                 TextColumn::make('classSchedule.schoolClass.academicStructure.department.name_en')
                     ->label('Department')
                     ->sortable()
                     ->searchable()
+                    ->weight('bold')
                     ->color('success'),
                 TextColumn::make('classSchedule.schoolClass.academicStructure.academic_level')
                     ->label('Academic Level')
                     ->formatStateUsing(fn (string $state): string => ucfirst($state))
                     ->sortable()
                     ->searchable()
+                    ->weight('bold')
                     ->color('warning'),
                 TextColumn::make('classSchedule.schoolClass.academicStructure.generation')
                     ->label('Generation')
                     ->formatStateUsing(fn (string $state): string => ucfirst($state))
                     ->sortable()
                     ->searchable()
+                    ->weight('bold')
                     ->color('success'),
                 TextColumn::make('classSchedule.schoolClass.academicStructure.year_progress')
                     ->label('Year Progress')
@@ -166,51 +170,65 @@ class TaskAssessmentResource extends Resource
                     ->badge()
                     ->sortable()
                     ->searchable()
+                    ->weight('bold')
                     ->color('info'),
 
                 TextColumn::make('classSchedule.schoolClass.class_code')
                     ->label('Class Code')
+                    ->weight('bold')
                     ->color('success')
+                    ->sortable()
                     ->searchable()
                     ->badge(),
                 TextColumn::make('classSchedule.schoolClass.shift')
                     ->label('Shift')
                     ->color('warning')
+                    ->sortable()
+                    ->weight('bold')
                     ->searchable()
                     ->badge(),
                 TextColumn::make('classSchedule.schoolClass.room_number')
                     ->label('Room Number')
+                    ->weight('bold')
                     ->color('info')
                     ->searchable()
                     ->badge(),
                 TextColumn::make('classSchedule.subject_name_en')
                     ->label('Subject Title')
                     ->searchable()
+                    ->weight('bold')
                     ->color('success'),
                 TextColumn::make('title')
                     ->label('Task Headline')
                     ->sortable()
+                    ->weight('bold')
                     ->color('info')
                     ->searchable(),
                 TextColumn::make('task_type')
                     ->label('Type')
+                    ->weight('bold')
                     ->color('warning')
                     ->badge(),
                 TextColumn::make('max_score_threshold')
                     ->label('Total Score')
                     ->sortable()
+                    ->weight('bold')
                     ->color('success'),
                 TextColumn::make('deadline_cut_off')
                     ->label('Deadline Timeline')
                     ->color('danger')
-                    ->dateTime(),
+                    ->weight('bold')
+                    ->dateTime('M d Y, H:i'),
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->timezone('Asia/Phnom_Penh')
                     ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->searchable()
+                    ->weight('bold')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
+            ->defaultSort('created_at', 'desc')
             ->actions([
                 ViewAction::make()->color('gray')->icon('heroicon-s-eye')->size('sm'),
                 EditAction::make()->color('info')->icon('heroicon-s-pencil')->size('sm'),

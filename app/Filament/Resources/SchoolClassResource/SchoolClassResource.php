@@ -15,9 +15,9 @@ class SchoolClassResource extends AbstractSchoolClassResource
 {
      protected static string|BackedEnum|null $navigationIcon = Heroicon::ChartBarSquare;
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Academic Classes Management';
+    protected static \UnitEnum|string|null $navigationGroup = 'Manage Faculty & Department';
     
-    protected static ?string $pluralModelLabel = 'Classes Academic';
+    protected static ?string $pluralModelLabel = 'Manage Classes Academic';
 
     public static function canAccess(): bool
     {

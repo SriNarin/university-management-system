@@ -5,18 +5,15 @@ namespace App\Filament\Widgets;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
-// 🌟 FIXED: Class name changed to match the filename exactly
 class AdminPieChart extends ChartWidget
 {
-    protected ?string $heading = '📊 Overall System Statistics';
+    protected ?string $heading = '📊 System User Roles Distribution';
     protected int | string | array $columnSpan = 'half';
     protected static ?int $sort = 2;
 
     public static function canView(): bool
     {
-        // 🌟 FIXED: Changed to guard this chart so only admins see it
         return Auth::check() && Auth::user()->role === 'admin';
     }
 
@@ -27,16 +24,47 @@ class AdminPieChart extends ChartWidget
 
     protected function getData(): array
     {
-        // Your logic for fetching admin metrics...
+        // Query database to aggregate quantities of each user role type
+        $roleMetrics = DB::table('users')
+            ->select('role', DB::raw('count(*) as total'))
+            ->groupBy('role')
+            ->pluck('total', 'role')
+            ->toArray();
+
+        // Map database records cleanly, defaulting to 0 if a specific role has no users yet
+        $adminCount          = $roleMetrics['admin'] ?? 0;
+        $facultyManagerCount = $roleMetrics['faculty_manager'] ?? 0;
+        $studyOfficeCount    = $roleMetrics['study_office'] ?? 0;
+        $teacherCount        = $roleMetrics['teacher'] ?? 0;
+        $studentCount        = $roleMetrics['student'] ?? 0;
+
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Breakdown',
-                    'data' => [0, 10, 20], // Replace with your logic counters
-                    'backgroundColor' => ['#ec4899', '#8b5cf6', '#14b8a6'],
+                    'label' => 'Users Count',
+                    'data' => [
+                        $adminCount,
+                        $facultyManagerCount,
+                        $studyOfficeCount,
+                        $teacherCount,
+                        $studentCount
+                    ],
+                    'backgroundColor' => [
+                        '#EF4444', // Admin - Red
+                        '#EC4899', // Faculty Manager - Pink
+                        '#3B82F6', // Study Office - Blue
+                        '#F59E0B', // Teacher - Amber
+                        '#10B981', // Student - Emerald Green
+                    ],
                 ],
             ],
-            'labels' => ['Admins', 'Teachers', 'Students'],
+            'labels' => [
+                'Admins ', 
+                'Faculty Managers ', 
+                'Study Office Staff ', 
+                'Teachers ', 
+                'Students '
+            ],
         ];
     }
 }

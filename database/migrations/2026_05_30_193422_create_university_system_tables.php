@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->enum('role', ['admin', 'faculty_manager', 'study_office', 'teacher', 'student'])->default('student');
             $table->boolean('is_active')->default(true);
             $table->string('lang_preference')->default('en');
+            $table->string('avatar_url')->nullable();
             $table->json('permissions_matrix')->nullable();
             $table->rememberToken();
             $table->timestamps();

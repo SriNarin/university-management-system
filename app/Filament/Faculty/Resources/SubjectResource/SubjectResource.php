@@ -3,6 +3,7 @@
 namespace App\Filament\Faculty\Resources;
 
 use App\Filament\Shared\AbstractSubjectResource;
+
 use App\Filament\Faculty\Resources\SubjectResource\Pages;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -16,7 +17,7 @@ class SubjectResource extends AbstractSubjectResource
 {
      protected static string|BackedEnum|null $navigationIcon = Heroicon::BookOpen;
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Academic Classes Management';
+    protected static \UnitEnum|string|null $navigationGroup = 'Manage Department & Class';
 
     protected static ?string $slug = 'subjects';
 

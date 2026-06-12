@@ -104,8 +104,8 @@ class FacultyStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('success'),
 
-            Stat::make('📊 Total Allocation Applicants', $totalPipelineStudents)
-                ->description('Combined pipeline status tracking')
+            Stat::make('📊 Total Approval Enrolled Students', $totalPipelineStudents)
+                ->description('Total Students approval enrolled tracking')
                 ->color('gray'),
         ];
     }

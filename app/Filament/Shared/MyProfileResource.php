@@ -3,6 +3,8 @@
 namespace App\Filament\Shared;
 
 use Filament\Forms\Form;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
@@ -44,6 +46,14 @@ class MyProfileResource extends Resource
                     ->description('View your account role classification and update your core identity details.')
                     ->schema([
                         Grid::make(3)->schema([
+                            FileUpload::make('avatar_url') 
+                                ->label('My Profile Picture')
+                                ->image()
+                                ->avatar()
+                                ->directory('profile-photos')
+                                ->maxSize(2048)
+                                ->columnSpanFull(),
+
                             TextInput::make('name')
                                 ->label('Full Name')
                                 ->required()
@@ -99,19 +109,35 @@ class MyProfileResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('avatar_url')
+                    ->label('My Profile Picture')
+                    ->circular()
+                   
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=' . urlencode($record->name))
+                    ->extraImgAttributes(['alt' => 'Profile Picture']),
+
                 TextColumn::make('name')
                     ->label('Profile Name')
                     ->fontFamily('sans')
                     ->weight('bold')
+                    ->color('danger')
                     ->searchable(),
 
                 TextColumn::make('email')
                     ->label('Email Identity')
+                    ->searchable()
+                    ->color('info')
+                    ->sortable()
+                    ->weight('bold')
                     ->copyable(),
 
                 TextColumn::make('role')
                     ->label('Role Group')
                     ->badge()
+                    ->sortable()
+                    ->searchable()
+                    
+
                     ->color(fn (string $state): string => match ($state) {
                         'admin' => 'danger',
                         'faculty_manager' => 'warning',
@@ -123,6 +149,10 @@ class MyProfileResource extends Resource
 
                 IconColumn::make('is_active')
                     ->label('Account Status')
+                    ->color('success')
+                    ->sortable()
+                    ->searchable()
+                    
                     ->boolean(),
             ])
             ->actions([

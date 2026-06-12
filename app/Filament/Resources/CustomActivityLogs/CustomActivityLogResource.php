@@ -84,12 +84,15 @@ class CustomActivityLogResource extends Resource
                     ->label('Operator Profile')
                     ->searchable()
                     ->sortable()
+                    ->color('danger')
+                    ->weight('bold')
                     ->default('System Automated Process'),
 
                 // Maps to your exact actor_role_context column field
                 TextColumn::make('actor_role_context')
                     ->label('Actor Role')
                     ->badge()
+                    ->weight('bold')
                     ->colors([
                         'danger' => 'admin',
                         'warning' => 'faculty_manager',
@@ -105,6 +108,7 @@ class CustomActivityLogResource extends Resource
                 TextColumn::make('action_performed')
                     ->label('Operation Triggered')
                     ->badge()
+                    ->weight('bold')
                     ->colors([
                         'success' => 'created',
                         'warning' => 'updated',
@@ -117,13 +121,15 @@ class CustomActivityLogResource extends Resource
                     ->label('Affected Resource Module')
                     ->searchable()
                     ->sortable()
-                    ->badge()
-                    ->color('gray'),
+                    ->badge()  
+                    ->weight('bold')              
+                    ->color('info'),
 
                 // Maps to your exact logged_payload_summary column field
                 TextColumn::make('logged_payload_summary')
-                    ->label('Audit Narrative Summary')
+                    ->label('Audit activities Summary')
                     ->searchable()
+                    ->color('warning')
                     ->wrap(),
 
                 TextColumn::make('created_at')
@@ -131,6 +137,8 @@ class CustomActivityLogResource extends Resource
                     ->timezone('Asia/Phnom_Penh')
                    ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->searchable()
+                    ->weight('bold')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->defaultSort('created_at', 'desc')
@@ -169,7 +177,7 @@ class CustomActivityLogResource extends Resource
     {
         return [
             'index' => ListCustomActivityLogs::route('/'),
-            'create' => CreateCustomActivityLog::route('/create'),
+            // 'create' => CreateCustomActivityLog::route('/create'),
             'edit' => EditCustomActivityLog::route('/{record}/edit'),
             'view' => ViewCustomActivityLog::route('/{record}'),
         ];

@@ -43,6 +43,8 @@ abstract class AbstractSchoolClassResource extends Resource
             ->columns([
                 TextColumn::make('id')
                     ->label('ID Ref')
+                    ->searchable()
+                    ->weight('bold')
                     ->sortable(),
 
                 // 1. UNIQUE CLASS CODE
@@ -51,13 +53,21 @@ abstract class AbstractSchoolClassResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->badge()
+                    ->weight('bold')
                     ->color('success'),
 
-                // 2. PARENT DEPARTMENT NAME
+                TextColumn::make('academicStructure.department.faculty.name_en')
+                    ->label('Faculty')
+                    ->searchable()
+                    ->color('warning')
+                    ->weight('bold')
+                    ->sortable(),
+
                 TextColumn::make('academicStructure.department.name_en')
                     ->label('Department')
                     ->searchable()
-                    ->color('primary')
+                    ->color('info')
+                    ->weight('bold')
                     ->sortable(),
 
                 // 3. GENERATION
@@ -66,6 +76,7 @@ abstract class AbstractSchoolClassResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->badge()
+                    ->weight('bold')
                     ->color('warning'),
 
                 // 4. ACADEMIC LEVEL
@@ -75,6 +86,7 @@ abstract class AbstractSchoolClassResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->badge()
+                    ->weight('bold')
                     ->color('info'),
 
                 // 5. YEAR PROGRESS STATUS
@@ -84,6 +96,7 @@ abstract class AbstractSchoolClassResource extends Resource
                     ->badge()
                     ->sortable()
                     ->searchable()
+                    ->weight('bold')
                     ->color('warning'),
 
                 // 6. SHIFT TIMING
@@ -93,6 +106,7 @@ abstract class AbstractSchoolClassResource extends Resource
                     ->sortable()
                     ->badge()
                     ->searchable()
+                    ->weight('bold')
                     ->color('success'),
 
                 // 7. BASE ROOM NUMBER
@@ -101,12 +115,16 @@ abstract class AbstractSchoolClassResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->badge()
-                    ->color('secondary'),
+                    ->weight('bold')
+                    ->color('info'),
+
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->timezone('Asia/Phnom_Penh')
                     ->dateTime('M d Y, H:i')
                     ->sortable()
+                    ->searchable()
+                    ->weight('bold')
                     ->toggleable(isToggledHiddenByDefault: false),
                
             ])

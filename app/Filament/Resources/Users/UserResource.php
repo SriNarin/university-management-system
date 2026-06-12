@@ -31,6 +31,8 @@ use Filament\Actions\ViewAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
 
 class UserResource extends Resource
 {
@@ -43,8 +45,17 @@ class UserResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Create User account with specific role and language preference')
+            Section::make('Create User account with specific roles')
                 ->schema([
+                    FileUpload::make('avatar_url') 
+                        ->label('Profile Avatar Picture')
+                        ->image()
+                        ->avatar() // Makes the upload circle-shaped preview
+                        ->directory('profile-photos')
+                        ->maxSize(2048) // Limit to 2MB Max
+                        ->columnSpanFull()
+                        ->nullable(),
+
                     TextInput::make('name')
                         ->required()
                         ->maxLength(255),
@@ -82,8 +93,16 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable(),
-                TextColumn::make('email')->searchable(),
+                ImageColumn::make('avatar_url')
+                    ->label('Profile')
+                    ->circular()
+                    
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=' . urlencode($record->name))
+                    // Add this line to force Filament to look at your defaultImageUrl closure instead of rendering font initials:
+                    ->extraImgAttributes(['alt' => 'Profile Picture']),
+
+                TextColumn::make('name')->searchable()->sortable()->color('danger')->weight('bold'),
+                TextColumn::make('email')->searchable()->sortable()->color('info')->weight('bold'),
                 TextColumn::make('role')
                     ->badge()
                     ->colors([
@@ -99,6 +118,7 @@ class UserResource extends Resource
                     ->timezone('Asia/Phnom_Penh')
                     ->sortable()
                     ->dateTime('M d Y, H:i')
+                    ->color('danger')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
