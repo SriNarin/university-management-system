@@ -7,9 +7,25 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        // NOTE: If the default Laravel user migration already ran, we modify or replace it cleanly.
-        // To prevent table collision crash loops, we drop the basic default stub table first if it exists.
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('system_notifications');
+        Schema::dropIfExists('custom_activity_logs');
+        Schema::dropIfExists('announcements');
+        Schema::dropIfExists('system_events');
+        Schema::dropIfExists('lesson_materials');
+        Schema::dropIfExists('assessment_submissions');
+        Schema::dropIfExists('task_assessments');
+        Schema::dropIfExists('attendances');
+        Schema::dropIfExists('class_schedules');
+        Schema::dropIfExists('class_user');
+        Schema::dropIfExists('student_profiles');
+        Schema::dropIfExists('subjects');
+        Schema::dropIfExists('school_classes');
+        Schema::dropIfExists('academic_structures');
+        Schema::dropIfExists('departments');
+        Schema::dropIfExists('faculties');
         Schema::dropIfExists('users');
+        Schema::enableForeignKeyConstraints();
 
         // 1. Core Authentication Framework Engine Table
         Schema::create('users', function (Blueprint $table) {
@@ -240,24 +256,24 @@ return new class extends Migration {
 
     public function down(): void
     {   
-        // Schema::disableForeignKeyConstraints();
-        // Schema::dropIfExists('system_notifications');
-        // Schema::dropIfExists('custom_activity_logs');
-        // Schema::dropIfExists('announcements');
-        // Schema::dropIfExists('system_events');
-        // Schema::dropIfExists('lesson_materials');
-        // Schema::dropIfExists('assessment_submissions');
-        // Schema::dropIfExists('task_assessments');
-        // Schema::dropIfExists('attendances');
-        // Schema::dropIfExists('class_schedules');
-        // Schema::dropIfExists('class_user');
-        // Schema::dropIfExists('student_profiles');
-        // Schema::dropIfExists('subjects');
-        // Schema::dropIfExists('school_classes');
-        // Schema::dropIfExists('academic_structures');
-        // Schema::dropIfExists('departments');
-        // Schema::dropIfExists('faculties');
-        // Schema::dropIfExists('users');
-        // Schema::enableForeignKeyConstraints();
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('system_notifications');
+        Schema::dropIfExists('custom_activity_logs');
+        Schema::dropIfExists('announcements');
+        Schema::dropIfExists('system_events');
+        Schema::dropIfExists('lesson_materials');
+        Schema::dropIfExists('assessment_submissions');
+        Schema::dropIfExists('task_assessments');
+        Schema::dropIfExists('attendances');
+        Schema::dropIfExists('class_schedules');
+        Schema::dropIfExists('class_user');
+        Schema::dropIfExists('student_profiles');
+        Schema::dropIfExists('subjects');
+        Schema::dropIfExists('school_classes');
+        Schema::dropIfExists('academic_structures');
+        Schema::dropIfExists('departments');
+        Schema::dropIfExists('faculties');
+        Schema::dropIfExists('users');
+        Schema::enableForeignKeyConstraints();
     }
 };

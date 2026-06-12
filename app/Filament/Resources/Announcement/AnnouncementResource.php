@@ -38,6 +38,7 @@ use Filament\Actions\DeleteBulkAction;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Filament\Forms\Form;
 
 
 
@@ -98,9 +99,9 @@ class AnnouncementResource extends Resource
             });
     }
 
-    public static function form(Schema $schema): Schema
+    public static function form(Form $form): Form
     {
-        return $schema->components([
+        return $form->schema([
             Section::make('University Broadcast Notice Information')
                 ->schema([
                     TextInput::make('title')
