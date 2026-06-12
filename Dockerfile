@@ -54,8 +54,11 @@ RUN echo 'server { \
     } \
 }' > /etc/nginx/http.d/default.conf
 
+# Give the server permission to read and execute our deployment script file
+RUN chmod +x /var/www/html/deploy.sh
+
 # Open web entry port 80
 EXPOSE 80
 
-# CRITICAL FIX: Run migrations and link storage automatically upon boot up, then start server
-CMD php artisan migrate --force && php artisan storage:link && php artisan optimize:clear && php-fpm -D && nginx -g "daemon off;"
+# Execute our shell automation file when the web app container wakes up live
+CMD ["/var/www/html/deploy.sh"]
