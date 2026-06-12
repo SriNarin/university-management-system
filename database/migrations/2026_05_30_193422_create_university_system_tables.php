@@ -240,24 +240,24 @@ return new class extends Migration {
 
     public function down(): void
     {   
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('system_notifications');
-        Schema::dropIfExists('custom_activity_logs');
-        Schema::dropIfExists('announcements');
-        Schema::dropIfExists('system_events');
-        Schema::dropIfExists('lesson_materials');
-        Schema::dropIfExists('assessment_submissions');
-        Schema::dropIfExists('task_assessments');
-        Schema::dropIfExists('attendances');
-        Schema::dropIfExists('class_schedules');
-        Schema::dropIfExists('class_user');
-        Schema::dropIfExists('student_profiles');
-        Schema::dropIfExists('subjects');
-        Schema::dropIfExists('school_classes');
-        Schema::dropIfExists('academic_structures');
-        Schema::dropIfExists('departments');
-        Schema::dropIfExists('faculties');
-        Schema::dropIfExists('users');
-        Schema::enableForeignKeyConstraints();
+        // Schema::disableForeignKeyConstraints();
+        // Schema::dropIfExists('system_notifications');
+        // Schema::dropIfExists('custom_activity_logs');
+        // Schema::dropIfExists('announcements');
+        // Schema::dropIfExists('system_events');
+        // Schema::dropIfExists('lesson_materials');
+        // Schema::dropIfExists('assessment_submissions');
+        // Schema::dropIfExists('task_assessments');
+        // Schema::dropIfExists('attendances');
+        // Schema::dropIfExists('class_schedules');
+        // Schema::dropIfExists('class_user');
+        // Schema::dropIfExists('student_profiles');
+        // Schema::dropIfExists('subjects');
+        // Schema::dropIfExists('school_classes');
+        // Schema::dropIfExists('academic_structures');
+        // Schema::dropIfExists('departments');
+        // Schema::dropIfExists('faculties');
+        // Schema::dropIfExists('users');
+        // Schema::enableForeignKeyConstraints();
     }
 };
