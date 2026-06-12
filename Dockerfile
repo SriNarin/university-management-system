@@ -57,5 +57,5 @@ RUN echo 'server { \
 # Open web entry port 80
 EXPOSE 80
 
-# Start up both PHP-FPM and Nginx simultaneously upon launch
-CMD php-fpm -D && nginx -g "daemon off;"
+# CRITICAL FIX: Run migrations and link storage automatically upon boot up, then start server
+CMD php artisan migrate --force && php artisan storage:link && php artisan optimize:clear && php-fpm -D && nginx -g "daemon off;"
