@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AnnouncementResource\Pages\CreateAnnouncement;
-use App\Filament\Resources\AnnouncementResource\Pages\EditAnnouncement;
-use App\Filament\Resources\AnnouncementResource\Pages\ListAnnouncements;
-use App\Filament\Resources\AnnouncementResource\Pages\ViewAnnouncement;
+use App\Filament\Resources\Announcement\Pages\CreateAnnouncement;
+use App\Filament\Resources\Announcement\Pages\EditAnnouncement;
+use App\Filament\Resources\Announcement\Pages\ListAnnouncements;
+use App\Filament\Resources\Announcement\Pages\ViewAnnouncement;
 use App\Models\Announcement;
 use BackedEnum;
 use Filament\Resources\Resource;

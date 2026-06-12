@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\AnnouncementResource\Pages;
+namespace App\Filament\Resources\Announcement\Pages;
 
 use App\Filament\Resources\AnnouncementResource;
 use Filament\Resources\Pages\CreateRecord;

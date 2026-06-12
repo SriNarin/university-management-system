@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Resources\Faculties;
+namespace App\Filament\Resources\Faculty;
 
-use App\Filament\Resources\Faculties\Pages\CreateFaculty;
-use App\Filament\Resources\Faculties\Pages\EditFaculty;
-use App\Filament\Resources\Faculties\Pages\ListFaculties;
-use App\Filament\Resources\Faculties\Pages\ViewFaculty;
+use App\Filament\Resources\Faculty\Pages\CreateFaculty;
+use App\Filament\Resources\Faculty\Pages\EditFaculty;
+use App\Filament\Resources\Faculty\Pages\ListFaculties;
+use App\Filament\Resources\Faculty\Pages\ViewFaculty;
 
 use App\Models\Faculty;
 use App\Models\User; // <-- IMPORTED USER MODEL FOR INTERCEPTING ACCOUNT DATA
@@ -138,4 +138,5 @@ class FacultyResource extends Resource
             'edit' => EditFaculty::route('/{record}/edit'),
         ];
     }
+    
 }
