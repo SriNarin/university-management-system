@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: university-system
-    env: php
-    plan: free
-    region: singapore
-    buildCommand: composer install --no-dev && php artisan optimize:clear
-    startCommand: heroku-php-nginx public/
