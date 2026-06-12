@@ -9,12 +9,15 @@ use App\Models\StudentProfile;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\URL;
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void {    }
     public function boot(): void
     {
-        
+        if (config('app.env') === 'production' || isset($_SERVER['HTTPS'])) {
+            URL::forceScheme('https');
+        }
 
         User::observe(ActivityLogObserver::class);
         Announcement::observe(ActivityLogObserver::class);
