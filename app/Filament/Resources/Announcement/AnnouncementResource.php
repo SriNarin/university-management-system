@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\Announcement;
 
 use App\Filament\Resources\Announcement\Pages\CreateAnnouncement;
 use App\Filament\Resources\Announcement\Pages\EditAnnouncement;
