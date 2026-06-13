@@ -3,17 +3,23 @@
 namespace App\Filament\Resources\Faculty\Pages;
 
 use App\Filament\Resources\Faculty\FacultyResource;
-use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
 
-class ListFaculties extends ListRecords
+class EditFaculty extends EditRecord
 {
     protected static string $resource = FacultyResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            DeleteAction::make(),
         ];
     }
+    
 }

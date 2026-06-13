@@ -3,10 +3,9 @@
 namespace App\Filament\Resources\Faculty\Pages;
 
 use App\Filament\Resources\Faculty\FacultyResource;
-use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Resources\Pages\CreateRecord;
 
-class EditFaculty extends EditRecord
+class CreateFaculty extends CreateRecord
 {
     protected static string $resource = FacultyResource::class;
 
@@ -14,11 +13,5 @@ class EditFaculty extends EditRecord
     {
         return $this->getResource()::getUrl('index');
     }
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            DeleteAction::make(),
-        ];
-    }
 }
+

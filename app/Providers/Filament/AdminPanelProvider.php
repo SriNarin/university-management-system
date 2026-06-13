@@ -46,12 +46,16 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->resources([
+             
                 \App\Filament\Resources\MyProfileResource::class,
                 \App\Filament\Resources\CustomActivityLogResource::class,
                 \App\Filament\Resources\SystemNotificationResource::class,
                 \App\Filament\Resources\AnnouncementResource::class,
+                \App\Filament\Resources\Users\UserResource::class,
+                \App\Filament\Resources\Faculty\FacultyResource::class,
                 \App\Filament\Resources\DepartmentResource::class,
                 \App\Filament\Resources\SchoolClassResource::class,
+
                 
         ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

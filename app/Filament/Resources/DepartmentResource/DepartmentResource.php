@@ -16,6 +16,7 @@ class DepartmentResource extends AbstractDepartmentResource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::BuildingOffice2;
 
     protected static \UnitEnum|string|null $navigationGroup = 'Manage Faculty & Department';
+     protected static ?string $pluralModelLabel = 'Manage Departments';
 
     public static function canAccess(): bool
     {

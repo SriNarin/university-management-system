@@ -39,6 +39,7 @@ class FacultyResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
 
     protected static \UnitEnum|string|null $navigationGroup = 'Manage Faculty & Department';
+     protected static ?string $pluralModelLabel = 'Manage Faculty';
 
 
     public static function form(Schema $schema): Schema
