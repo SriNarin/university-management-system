@@ -85,7 +85,7 @@ return new class extends Migration {
                 ]);
             $table->enum('shift', ['morning', 'afternoon', 'evening', 'weekend', 'full_day', 'online', 'other']);
             $table->string('room_number');
-            $table->unsignedBigInteger('teacher_id')->nullable()->after('id');
+            $table->unsignedBigInteger('teacher_id')->nullable();
             $table->boolean('is_teacher_timetable_published')->default(false)->after('teacher_id');
             $table->boolean('is_timetable_published')->default(false);
             $table->timestamp('timetable_published_at')->nullable();
