@@ -65,6 +65,7 @@ class UserResource extends Resource
                         ->unique(ignoreRecord: true),
                     TextInput::make('password')
                         ->password()
+                        ->revealable()
                         ->dehydrated(fn ($state) => filled($state))
                         ->required(fn (string $context): bool => $context === 'create'),
                     Select::make('role')
